@@ -2,7 +2,7 @@ from app import app
 from flask import render_template, flash, request, url_for, redirect, session
 from forms import SignupForm, LoginForm
 from models import Vendor
-from utility_funcs import get_password_hash, check_password
+from utility_funcs import get_password_hash, check_password, parse_product_catalog_multidict
 
 
 @app.route('/')
@@ -20,6 +20,29 @@ def index():
         }
     ]
     return render_template('index.html', title='Home', vendor=vendor, posts=posts)
+
+
+@app.route('/catalog', methods=['GET', 'POST'])
+def catalog():
+
+    if 'email' not in session:
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        f = request.form
+        products = parse_product_catalog_multidict(f)
+        print products
+
+        # Find the vendor in database with matching email address
+        vendors_with_email = Vendor.objects(email=session['email'])
+        if len(vendors_with_email) > 1:
+            print "Error : Multiple vendors in database with same email"
+        vendor = vendors_with_email.first()
+        vendor.product_catalog.extend(products)
+        vendor.save()
+        flash("Added products to database")
+
+    return render_template('product_catalog.html')
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -90,11 +113,12 @@ def profile():
         print "Error : Multiple vendors in database with same email"
 
     vendor = vendors_with_email.first()
+    prod_count = str(len(vendor.product_catalog))
 
     if vendor is None:
         return redirect(url_for('login'))
     else:
-        return render_template('profile.html')
+        return render_template('profile.html', v = vendor, products=vendor.product_catalog, product_count=prod_count)
 
 
 @app.route('/logout')

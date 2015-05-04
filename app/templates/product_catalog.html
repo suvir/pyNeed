@@ -1,0 +1,32 @@
+<!-- extend from base layout -->
+{% extends "base.html" %}
+{% block content %}
+
+<div style="width:90%;margin:auto;">
+	<h1>Please add products to the catalog here</h1>
+	<h3>At any time, your profile page displays all products added by you.</h3>
+	<form method="post">
+	<div id="itemRows">
+
+	Name: <input type="text" name="add_qty" /> Description: <input type="text" name="add_name" /> <input onclick="addRow(this.form);" type="button" value="Add row" />
+	</div>
+	<p><input type="submit" name="ok" value="Save Changes"></p>
+	</form>
+</div>
+
+<script type="text/javascript">
+var rowNum = 0;
+function addRow(frm) {
+	rowNum++;
+	console.log(rowNum);
+	var row = '<p id="rowNum'+rowNum+'">Name: <input type="text" name="qty'+rowNum+'" value="'+frm.add_qty.value+'"> Description: <input type="text" name="name'+rowNum+'" value="'+frm.add_name.value+'"> <input type="button" value="Remove" onclick="removeRow('+rowNum+');"></p>';
+	jQuery('#itemRows').append(row);
+	frm.add_qty.value = '';
+	frm.add_name.value = '';
+}
+
+function removeRow(rnum) {
+	jQuery('#rowNum'+rnum).remove();
+}
+</script>
+{% endblock %}

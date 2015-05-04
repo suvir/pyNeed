@@ -5,4 +5,17 @@
     <h2>Profile</h2>
     <h3>This is {{ session['email'] }}'s profile page</h3>
 
+<div><p> <b>Name</b> : {{ v.name }}</p></div>
+<div><p> <b>Description</b> : {{ v.description }}</p></div>
+<div><p> <b>Email Address</b> : {{ v.email }}</p></div>
+<div><p> <b>Type of business</b> : {{ v.category }}</p></div>
+<div><p> <b>Address</b> : {{ v.address }}</p></div>
+<div><p> <b>Phone number</b> : {{ v.phone }}</p></div>
+<div><p> <b>City</b> : {{ v.city }}</p></div>
+<div><p> <b>State</b> : {{ v.state }}</p></div>
+
+    <h3>You have added {{ product_count }} products to iNeed</h3>
+    {% for product in products %}
+    <div><p> <b>{{ product.name }}</b> : {{ product.description }}</p></div>
+    {% endfor %}
 {% endblock %}
