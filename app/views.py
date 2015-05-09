@@ -1,9 +1,9 @@
 from app import app
-from flask import render_template, flash, request, url_for, redirect, session
+from flask import render_template, flash, request, url_for, redirect, session, Response, jsonify
 from forms import SignupForm, LoginForm, ProductAddForm
 from models import Vendor
 from utility_funcs import get_password_hash, check_password, parse_product_catalog_multidict, get_coordinates
-from decimal import Decimal
+import bson
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -201,6 +201,23 @@ def profile():
     else:
         return render_template('profile.html', v = vendor, products=vendor.product_catalog, product_count=prod_count)
 
+
+@app.route('/api/vendor/type/<vendorid>', methods=['GET'])
+def getvendortype(vendorid):
+    if bson.ObjectId.is_valid(vendorid):
+        vendors = Vendor.objects(id=vendorid)
+        if len(vendors)>=1:
+            resp = jsonify({'vendor_type':vendors.first().category})
+            resp.status_code = 200
+            return resp
+    else:
+        message={
+            'status':404,
+            'message': 'Not found, vendor with id:'+vendorid
+        }
+        resp = jsonify(message)
+        resp.status_code = 404
+        return resp
 
 @app.route('/logout')
 def signout():
