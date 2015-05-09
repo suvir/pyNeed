@@ -35,6 +35,14 @@ class MyTest(TestCase):
         response = self.client.get("/catalog")
         self.assertRedirects(response,"/login")
 
+    def test_login_with_email_in_session(self):
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess['logged'] = True
+                sess['email'] = 'test@gmail.com'
+            response = c.get('/login')
+        self.assertRedirects(response,"/profile")
+
 
 if __name__ == '__main__':
     unittest.main()
