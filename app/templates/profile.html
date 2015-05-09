@@ -2,6 +2,121 @@
 {% extends "base.html" %}
 {% block content %}
 
+<section id="about" class="about">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <h2>Edit Profile</h2>
+                <p class="lead">At any time, in order change the different values that you want, simply change the text in the boxes and save changes.</p>
+            </div>
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container -->
+</section>
+
+
+<section id="services" class="services bg-primary">
+    <div class="container" id="product_list">
+        <div class="row text-center">
+            <div class="row">
+                        <form action="/index" method="post" name="signup">
+                        <h2>Primary Information</h2>
+                        <div class="row" id="info">
+
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                <div class="form-group">
+
+                                    <!--<input type="text" name="company_name" id="company_name" class="form-control input-sm" placeholder="Company Name">-->
+                                    {{form.name(class_="form-control input-sm" ,placeholder="Company Name:")}}
+                                    {% for error in form.name.errors %}
+                                        <span style="color: red;">[{{ error }}]</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                <div class="form-group">
+                                    <!--<input type="text" name="" id="description" class="form-control input-sm" placeholder="Description">-->
+                                     {{form.email(class_="form-control input-sm" ,placeholder="Email:")}}
+                                    {% for error in form.email.errors %}
+                                        <span style="color: red;">[{{ error }}]</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <!--<input type="email" name="email" id="email" class="form-control input-sm" placeholder="Email Address">-->
+                           {{form.description(class_="form-control input-sm" ,placeholder="Description:")}}
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                <div class="form-group">
+                                    <!--<input type="password" name="password" id="password" class="form-control input-sm" placeholder="Password">-->
+                                    {{form.password(class_="form-control input-sm" ,placeholder="Password:")}}
+                                    {% for error in form.password.errors %}
+                                        <span style="color: red;">[{{ error }}]</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                <div class="form-group">
+                                   <!-- <input type="password" name="password_confirmation" id="password_confirmation" class="form-control input-sm" placeholder="Confirm Password">-->
+                                    {{form.confirm(class_="form-control input-sm" ,placeholder="Confirm Password:")}}
+                                    {% for error in form.confirm.errors %}
+                                        <span style="color: red;">[{{ error }}]</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="label vendor-label">Location</label>
+                            <!--<input type="text" name="adress" id="adress_line1" class="form-control input-sm" placeholder="Address">-->
+                            {{form.address(class_="form-control input-sm" ,placeholder="Street Address:")}}
+                        </div>
+                        <div class="form-group">
+                            <!--<input type="text" name="city" id="city" class="form-control input-sm" placeholder="City: ">-->
+                            {{form.city(class_="form-control input-sm" ,placeholder="City:")}}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                <!--
+                                <select class="form-control input-sm" id="state">
+                                    <option value="0" selected>CA</option>
+                                </select>-->
+                                {{form.state(class_="form-control input-sm")}}
+
+                            </div>
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                <div class="form-group">
+                                    <!--<input type="text" name="zipcode" id="zip_code" class="form-control input-sm" placeholder="Area Code:">-->
+                                    {{form.phone(class_="form-control input-sm" ,placeholder="Phone Number:")}}
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+                        <div class="form-group">
+                            <label for="vendor_type" class="label vendor-label">Vendor Type</label>
+                            {{form.category(class_="form-control input-sm")}}
+                        </div>
+                        <hr class="small">
+                        <input type="submit" value="Register" class="btn btn-dark">
+
+                    </form>
+                    </div>
+                    <!-- /.row (nested) -->
+                </div>
+                <!-- /.col-lg-10 -->
+        </div>
+    </div>
+</section>
     <h2>Profile</h2>
     <h3>This is {{ session['email'] }}'s profile page</h3>
 
