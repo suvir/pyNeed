@@ -2,7 +2,8 @@ from app import app
 from flask import render_template, flash, request, url_for, redirect, session
 from forms import SignupForm, LoginForm, ProductAddForm
 from models import Vendor
-from utility_funcs import get_password_hash, check_password, parse_product_catalog_multidict, parse_product
+from utility_funcs import get_password_hash, check_password, parse_product_catalog_multidict, get_coordinates
+from decimal import Decimal
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -27,9 +28,12 @@ def index():
         print "name received", form.name, 'data:', form.name.data
         # Hash the password and save to database
         pwdhash = get_password_hash(form.password.data)
+        coords = get_coordinates(form.address.data+" "+form.city.data)
+        print coords[0]
+        print coords[1]
         new_vendor = Vendor(name=form.name.data, description=form.description.data, email=form.email.data,
                             category=form.category.data, address=form.address.data, phone=form.phone.data,
-                            state=form.state.data, city=form.city.data, pwdhash=pwdhash)
+                            state=form.state.data, city=form.city.data, pwdhash=pwdhash, latitude=repr(coords[0]), longitude=repr(coords[1]))
         new_vendor.save()
         # Add email to cookie
         session['email'] = new_vendor.email
@@ -134,6 +138,7 @@ def signup():
         print "name received", form.name, 'data:', form.name.data
         # Hash the password and save to database
         pwdhash = get_password_hash(form.password.data)
+
         new_vendor = Vendor(name=form.name.data, description=form.description.data, email=form.email.data,
                             category=form.category.data, address=form.address.data, phone=form.phone.data,
                             state=form.state.data, city=form.city.data, pwdhash=pwdhash)

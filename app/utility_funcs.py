@@ -1,6 +1,13 @@
 __author__ = 'suvir'
 from werkzeug import generate_password_hash, check_password_hash
 from models import Product
+import urllib
+try:
+    import simplejson
+except ImportError:
+    import json as simplejson
+
+googleGeocodeUrl = 'http://maps.googleapis.com/maps/api/geocode/json?'
 
 def get_password_hash(password):
     return generate_password_hash(password)
@@ -38,3 +45,21 @@ def print_product_catalog_multidict(f):
     for key in f:
         for value in f.getlist(key):
             print key, ":", value, type(value)
+
+def get_coordinates(query, from_sensor=False):
+    query = query.encode('utf-8')
+    params = {
+        'address': query,
+        'sensor': "true" if from_sensor else "false"
+    }
+    url = googleGeocodeUrl + urllib.urlencode(params)
+    json_response = urllib.urlopen(url)
+    response = simplejson.loads(json_response.read())
+    if response['results']:
+        location = response['results'][0]['geometry']['location']
+        latitude, longitude = location['lat'], location['lng']
+        print query, latitude, longitude
+    else:
+        latitude, longitude = None, None
+        print query, "<no results>"
+    return latitude, longitude
