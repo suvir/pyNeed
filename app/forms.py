@@ -1,5 +1,5 @@
 from flask.ext.wtf import Form
-from wtforms import StringField, PasswordField, SelectField
+from wtforms import StringField, PasswordField, SelectField, SubmitField
 from wtforms.validators import DataRequired, Email, EqualTo
 
 class LoginForm(Form):
@@ -7,6 +7,7 @@ class LoginForm(Form):
     password = PasswordField('Password', validators=[DataRequired()])
 
 class SignupForm(Form):
+
     name = StringField("name", validators=[DataRequired()])
     description = StringField("description")
     email = StringField("email", validators=[DataRequired(), Email()])
@@ -34,5 +35,12 @@ class SignupForm(Form):
                                  ('TN', 'Tennessee'), ('TX', 'Texas'), ('UT', 'Utah'), ('VA', 'Virginia'),
                                  ('VI', 'Virgin Islands'), ('VT', 'Vermont'), ('WA', 'Washington'), ('WI', 'Wisconsin'),
                                  ('WV', 'West Virginia'), ('WY', 'Wyoming')])
+    submit = SubmitField("Register")
 
+class ProductEditRemoveForm(Form):
+    name = StringField("name", validators=[DataRequired()])
+    description = StringField("description")
 
+class ProductAddForm(Form):
+    name = StringField("name", validators=[DataRequired()])
+    description = StringField("description")

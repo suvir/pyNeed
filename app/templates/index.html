@@ -1,9 +1,252 @@
 <!-- extend from base layout -->
 {% extends "base.html" %}
 {% block content %}
-      <h1>Hello, welcome to iNeed!</h1>
+     <!-- <h1>Hello, welcome to iNeed!</h1>
       <h1>Please register to get started.</h1>
       {% for p in products %}
     	<div><p>{{ p.cuisine }} : <b>{{ p.dish }}</b></p></div>
-      {% endfor %}
+      {% endfor %}-->
+
+
+    <!-- About -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2>About us</h2>
+                    <p class="lead">The iNeed platform allows you as a vendor to reach out in a much bigger way to your customers,
+                        with deals and promotions by just adding these to your profile, and we will distribute this for you to our large userbase.</p>
+                </div>
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /.container -->
+    </section>
+
+    <!-- Services -->
+    <!-- The circle icons use Font Awesome's stacked icon classes. For more information, visit http://fontawesome.io/examples/ -->
+    <section id="services" class="services bg-primary">
+        <div class="container">
+            <div class="row text-center">
+                <div class="col-lg-10 col-lg-offset-1">
+                    <h2>Our Services</h2>
+                    <hr class="small">
+                    <div class="row">
+                        <div class="col-md-4 col-sm-6">
+                            <div class="service-item">
+                                <span class="fa-stack fa-4x">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-book fa-stack-1x text-primary"></i>
+                            </span>
+                                <h4>
+                                    <strong>Product Catalog</strong>
+                                </h4>
+                                <p>Provide a product catalog, adding new exciting items and promotions.</p>
+
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                            <div class="service-item">
+                                <span class="fa-stack fa-4x">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-money fa-stack-1x text-primary"></i>
+                            </span>
+                                <h4>
+                                    <strong>Deal &amp; Promotions</strong>
+                                </h4>
+                                <p>Promote deals on new items by logging in and adding these to your profile.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                            <div class="service-item">
+                                <span class="fa-stack fa-4x">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-compass fa-stack-1x text-primary"></i>
+                            </span>
+                                <h4>
+                                    <strong>Member Proximity</strong>
+                                </h4>
+                                <p>Consumers of iNeed are notified of deals when in proximity of the venue. </p>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- /.row (nested) -->
+                </div>
+                <!-- /.col-lg-10 -->
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /.container -->
+    </section>
+
+
+    <!-- Callout -->
+    <aside class="callout">
+        <div class="text-vertical-center">
+            <h1>Vendor Centered Solutions</h1>
+        </div>
+    </aside>
+
+    <!-- Profile -->
+    <section id="profile" class="portfolio">
+        <div class="container">
+            <div class="row">
+                {% if email == '' %}
+                    <div class="col-lg-10 col-lg-offset-1 text-center">
+                    <h2>Enroll with iNeed</h2>
+                    <hr class="small">
+                    <div class="row">
+                        <form action="/index" method="post" name="signup">
+                        <label for="info" class="label vendor-label">Company Information</label>
+                        <div class="row" id="info">
+
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                <div class="form-group">
+
+                                    <!--<input type="text" name="company_name" id="company_name" class="form-control input-sm" placeholder="Company Name">-->
+                                    {{form.name(class_="form-control input-sm" ,placeholder="Company Name:")}}
+                                    {% for error in form.name.errors %}
+                                        <span style="color: red;">[{{ error }}]</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                <div class="form-group">
+                                    <!--<input type="text" name="" id="description" class="form-control input-sm" placeholder="Description">-->
+                                     {{form.email(class_="form-control input-sm" ,placeholder="Email:")}}
+                                    {% for error in form.email.errors %}
+                                        <span style="color: red;">[{{ error }}]</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <!--<input type="email" name="email" id="email" class="form-control input-sm" placeholder="Email Address">-->
+                           {{form.description(class_="form-control input-sm" ,placeholder="Description:")}}
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                <div class="form-group">
+                                    <!--<input type="password" name="password" id="password" class="form-control input-sm" placeholder="Password">-->
+                                    {{form.password(class_="form-control input-sm" ,placeholder="Password:")}}
+                                    {% for error in form.password.errors %}
+                                        <span style="color: red;">[{{ error }}]</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                <div class="form-group">
+                                   <!-- <input type="password" name="password_confirmation" id="password_confirmation" class="form-control input-sm" placeholder="Confirm Password">-->
+                                    {{form.confirm(class_="form-control input-sm" ,placeholder="Confirm Password:")}}
+                                    {% for error in form.confirm.errors %}
+                                        <span style="color: red;">[{{ error }}]</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="label vendor-label">Location</label>
+                            <!--<input type="text" name="adress" id="adress_line1" class="form-control input-sm" placeholder="Address">-->
+                            {{form.address(class_="form-control input-sm" ,placeholder="Street Address:")}}
+                        </div>
+                        <div class="form-group">
+                            <!--<input type="text" name="city" id="city" class="form-control input-sm" placeholder="City: ">-->
+                            {{form.city(class_="form-control input-sm" ,placeholder="City:")}}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                <!--
+                                <select class="form-control input-sm" id="state">
+                                    <option value="0" selected>CA</option>
+                                </select>-->
+                                {{form.state(class_="form-control input-sm")}}
+
+                            </div>
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                <div class="form-group">
+                                    <!--<input type="text" name="zipcode" id="zip_code" class="form-control input-sm" placeholder="Area Code:">-->
+                                    {{form.phone(class_="form-control input-sm" ,placeholder="Phone Number:")}}
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+                        <div class="form-group">
+                            <label for="vendor_type" class="label vendor-label">Vendor Type</label>
+                            {{form.category(class_="form-control input-sm")}}
+                        </div>
+                        <hr class="small">
+                        <input type="submit" value="Register" class="btn btn-dark">
+
+                    </form>
+                    </div>
+                    <!-- /.row (nested) -->
+                </div>
+                <!-- /.col-lg-10 -->
+
+                {% else %}
+                     <div class="container">
+            <div class="row">
+                <div class="col-lg-10 col-lg-offset-1 text-center">
+                    <h2>{{v.name}} Profile</h2>
+                    <h4><small><i class="fa fa-anchor fa-fw"></i>{{v.description}} </small></h4>
+                    <hr class="small">
+                    <p>{{v.address}}<br>{{v.city}},{{v.state}}</p>
+                    <ul class="list-unstyled">
+                        <li><i class="fa fa-anchor fa-fw"></i>Restaurant </li>
+                        <li><i class="fa fa-phone fa-fw"></i> {{v.phone}}</li>
+                        <li><i class="fa fa-envelope-o fa-fw"></i>  <a href="{{v.email}}">{{v.email}}</a></li>
+
+                    </ul>
+                    <br/>
+
+                    <ul class="list-inline">
+                        <li>
+                            <a href="#"><i class="fa fa-facebook fa-fw fa-3x"></i></a>
+                        </li>
+                        <li>
+                            <a href="#"><i class="fa fa-twitter fa-fw fa-3x"></i></a>
+                        </li>
+                        <li>
+                            <a href="#"><i class="fa fa-dribbble fa-fw fa-3x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+                {% endif %}
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /.container -->
+    </section>
+
+    <!-- Call to Action -->
+    <aside class="call-to-action bg-primary">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h3> {{v.name}} products available through iNeed [{{product_count}}] </h3>
+                    <hr class="small"/>
+                    <ul class="list-unstyled">
+                        {% for product in products %}
+                            <li><i class="fa fa-circle-o"></i><b> {{ product.name }}</b> : {{ product.description }} </li>
+                        {% endfor %}
+                    </ul>
+                    <br />
+                    <a href="/catalog" class="btn btn-light" >Add/Edit items</a>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+
 {% endblock %}
