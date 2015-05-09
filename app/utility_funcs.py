@@ -27,6 +27,12 @@ def parse_product_catalog_multidict(f):
         next_item_desc = 'name' + str(product_counter)
     return products
 
+def parse_product(f):
+    product = Product()
+    product.name = f['name']
+    product.description = f['description']
+    return product
+
 def print_product_catalog_multidict(f):
     print "Printing out all received values"
     for key in f:
