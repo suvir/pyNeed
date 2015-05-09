@@ -145,7 +145,7 @@ def signup():
         new_vendor.save()
         # Add email to cookie
         session['email'] = new_vendor.email
-        return redirect(url_for('profile'))
+        return redirect(url_for('index'))
 
     return render_template('signup.html', form=form,email=email)
 
@@ -175,7 +175,7 @@ def login():
             flash('Login successful')
             print "Logged in successfully"
             session['email'] = form.email.data
-            return redirect(url_for('profile'))
+            return redirect(url_for('index'))
         else:
             form.password.errors.append("Incorrect password")
             flash('Login failed because incorrect password')
@@ -183,10 +183,10 @@ def login():
     return render_template('login.html', form=form)
 
 
-@app.route('/profile')
-def profile():
+@app.route('/editprofile', methods=['GET', 'POST'])
+def editprofile():
     if 'email' not in session:
-        return redirect(url_for('login'))
+        return redirect(url_for('index'))
 
     # Find the vendor in database with matching email address
     vendors_with_email = Vendor.objects(email=session['email'])
@@ -195,11 +195,12 @@ def profile():
 
     vendor = vendors_with_email.first()
     prod_count = str(len(vendor.product_catalog))
+    form = SignupForm()
 
     if vendor is None:
-        return redirect(url_for('login'))
+        return redirect(url_for('index'))
     else:
-        return render_template('profile.html', v = vendor, products=vendor.product_catalog, product_count=prod_count)
+        return render_template('profile.html', v = vendor, products=vendor.product_catalog, product_count=prod_count, form=form)
 
 
 @app.route('/api/vendor/type/<vendorid>', methods=['GET'])
