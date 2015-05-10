@@ -12,7 +12,7 @@ class MyTest(TestCase):
         return app
 
     def test_login(self):
-        response = self.client.get("/login")
+        response = self.client.get("/index")
         self.assert200(response)
 
     def test_index(self):
@@ -28,12 +28,20 @@ class MyTest(TestCase):
         self.assertRedirects(response,"/login")
 
     def test_profile_without_valid_email(self):
-        response = self.client.get("/profile")
-        self.assertRedirects(response,"/login")
+        response = self.client.get("/editprofile")
+        self.assertRedirects(response,"/index")
 
     def test_catalog_without_valid_email(self):
         response = self.client.get("/catalog")
         self.assertRedirects(response,"/login")
+
+    def test_login_with_email_in_session(self):
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess['logged'] = True
+                sess['email'] = 'pet@pet.com'
+            response = c.get('/index')
+        self.assert200(response)
 
 
 if __name__ == '__main__':

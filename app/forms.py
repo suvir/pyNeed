@@ -1,21 +1,14 @@
 from flask.ext.wtf import Form
-from wtforms import StringField, PasswordField, SelectField, SubmitField
-from wtforms.validators import DataRequired, Email, EqualTo, Required
+from wtforms import StringField, FloatField, PasswordField, SelectField, SubmitField
+from wtforms.validators import DataRequired, Email, EqualTo
+from ast import literal_eval
 
-class RequiredIf(Required):
-    # a validator which makes a field required if
-    # another field is set and has a truthy value
-
-    def __init__(self, other_field_name, *args, **kwargs):
-        self.other_field_name = other_field_name
-        super(RequiredIf, self).__init__(*args, **kwargs)
-
-    def __call__(self, form, field):
-        other_field = form._fields.get(self.other_field_name)
-        if other_field is None:
-            raise Exception('no field named "%s" in form' % self.other_field_name)
-        if bool(other_field.data):
-            super(RequiredIf, self).__call__(form, field)
+def VendorTypes():
+    result = []
+    with open('vendor_types', 'r') as f:
+        for line in f:
+            result.extend(literal_eval(line.strip()))
+    return result
 
 class LoginForm(Form):
     email = StringField("email", validators=[DataRequired(), Email()])
@@ -29,7 +22,7 @@ class SignupForm(Form):
     password = PasswordField('password',
                              validators=[DataRequired(), EqualTo('confirm', message='Passwords must match')])
     confirm = PasswordField('Repeat Password', validators=[DataRequired()])
-    category = SelectField("Type of Business", choices=[('restaurant', "Restaurant"), ('cafe', 'Cafe')])
+    category = SelectField("Type of Business", choices=VendorTypes())
     phone = StringField("Phone number")
     address = StringField("Address of business")
     city = StringField("City")
@@ -52,15 +45,26 @@ class SignupForm(Form):
                                  ('WV', 'West Virginia'), ('WY', 'Wyoming')])
     submit = SubmitField("Register")
 
+class ProductEditRemoveForm(Form):
+    name = StringField("name", validators=[DataRequired()])
+    description = StringField("description")
+
+class ProductAddForm(Form):
+    name = StringField("name", validators=[DataRequired()])
+    description = StringField("description")
+    price = FloatField("price", validators = [DataRequired()])
+
+class DealForm(Form):
+    deal_name = StringField("deal_name", validators=[DataRequired()])
+    product_name = StringField("prod_name", validators=[DataRequired()])
+    description = StringField("description")
+    price = FloatField("price", validators = [DataRequired()])
 
 class EditProfileForm(Form):
     name = StringField("name", validators=[DataRequired()])
     description = StringField("description")
     email = StringField("email", validators=[DataRequired(), Email()])
-    old = PasswordField('Old Password')
-    password = PasswordField('New Password', validators=[RequiredIf('old'), EqualTo('confirm', message='Passwords must match')])
-    confirm = PasswordField('Repeat New Password', validators=[RequiredIf('old')])
-    category = SelectField("Type of Business", choices=[('restaurant', "Restaurant"), ('cafe', 'Cafe')])
+    category = SelectField("Type of Business", choices=VendorTypes())
     phone = StringField("Phone number")
     address = StringField("Address of business")
     city = StringField("City")
@@ -81,12 +85,4 @@ class EditProfileForm(Form):
                                  ('TN', 'Tennessee'), ('TX', 'Texas'), ('UT', 'Utah'), ('VA', 'Virginia'),
                                  ('VI', 'Virgin Islands'), ('VT', 'Vermont'), ('WA', 'Washington'), ('WI', 'Wisconsin'),
                                  ('WV', 'West Virginia'), ('WY', 'Wyoming')])
-    submit = SubmitField("Submit Changes")
-
-class ProductEditRemoveForm(Form):
-    name = StringField("name", validators=[DataRequired()])
-    description = StringField("description")
-
-class ProductAddForm(Form):
-    name = StringField("name", validators=[DataRequired()])
-    description = StringField("description")
+    submit = SubmitField("Register")

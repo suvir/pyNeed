@@ -1,4 +1,7 @@
-.idea/*
+*.pyc
+.idea/
+manifest.yml
 config.py
-.idea/workspace.xml
+flask/
 .DS_STORE
+Procfile

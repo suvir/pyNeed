@@ -8,9 +8,9 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <h2>Please add products to the catalog here</h2>
-                    <p class="lead">At any time, the list below contains all products added by you,
-                        and can be changed by pressing the Save Changes button at the bottom. </p>
+                    <h2>Please add deals here</h2>
+                    <p class="lead">At any time, the list below contains all deals added by you,
+                        and can be changed by pressing the Save Changes button at the bottom.</p>
                 </div>
             </div>
             <!-- /.row -->
@@ -24,22 +24,24 @@
             <table class="table" id="product_table">
                 <tr>
                     <td><b>#</b></td>
-                    <td><b>Name</b></td>
+                    <td><b>Deal</b></td>
+                    <td><b>Product</b></td>
                     <td><b>Description</b></td>
                     <td><b>Price</b></td>
                     <td><b>Actions</b></td>
                 </tr>
                <form method="POST" id="delete_form">>
-                {%for product in products%}
+                {%for deal in deals%}
                     <tr>
-                        <td>{{products.index(product)+1}}</td>
-                        <td><input hidden="true" name="name" value="{{product.name}}">{{product.name}}</td>
-                        <td><input hidden="true" name="description" value="{{product.description}}">{{product.description}}</td>
-                        <td><input hidden="true" name="price" value="{{product.price}}">{{product.price}}</td>
+                        <td>{{deals.index(deal)+1}}</td>
+                        <td><input hidden="true" name="name" value="{{deal.name}}">{{deal.name}}</td>
+                        <td><input hidden="true" name="product_name" value="{{deal.product_name}}">{{deal.product_name}}</td>
+                        <td><input hidden="true" name="description" value="{{deal.description}}">{{deal.description}}</td>
+                        <td><input hidden="true" name="price" value="{{deal.price}}">{{deal.price}}</td>
                         <td>
-                            <label for="{{product.name}}_{{product.description}}_{{product.price}}" class="btn editremove">
+                            <label for="{{deal.name}}_{{deal.product_name}}_{{deal.description}}_{{deal.price}}" class="btn editremove">
                                 <i class="fa fa-remove fa-lg"></i> Remove</label>
-                            <input id="{{product.name}}_{{product.description}}_{{product.price}}" type="submit" name="editremove" value="Remove#{{product.name}}#{{product.description}}#{{product.price}}" class="hidden"/>
+                            <input id="{{deal.name}}_{{deal.product_name}}_{{deal.description}}_{{deal.price}}" type="submit" name="editremove" value="Remove#{{deal.name}}#{{deal.product_name}}#{{deal.description}}#{{deal.price}}" class="hidden"/>
                         </td>
                     </tr>
                 {%endfor%}
@@ -57,10 +59,17 @@
 
                         <td>
                             <div class="form-group">
+                                <input type="text" class="form-control input-sm" name="add_prod_name" placeholder="Product Name: "/>
+                            </div>
+                        </td>
+
+
+                        <td>
+                            <div class="form-group">
                                 <input type="text" class="form-control input-sm" name="add_name" placeholder="Description: "/>
                             </div>
                         </td>
-                        
+
                         <td>
                             <div class="form-group">
                                 <input type="text" class="form-control input-sm" name="add_price" placeholder="Price: "/>
@@ -69,7 +78,7 @@
 
                         <td>
                             <div class="form-group">
-                                <input type="submit" class="btn btn-light" name="editremove" value="Add Product">
+                                <input type="submit" class="btn btn-light" name="editremove" value="Add Deal">
                                  <!--<input onclick="addRow(this.form);" type="button" value="Add row" class="btn btn-light"/>-->
                             </div>
                         </td>
@@ -129,10 +138,13 @@ var rowNum = 0;
 function addRow(frm) {
 	rowNum++;
 	console.log(rowNum);
-	var row = '<p id="rowNum'+rowNum+'">Name: <input type="text" name="qty'+rowNum+'" value="'+frm.add_qty.value+'"> Description: <input type="text" name="name'+rowNum+'" value="'+frm.add_name.value+'"> Price: <input type="text" name="price'+rowNum+'" value="'+frm.add_price.value+'"> <input type="button" value="Remove" onclick="removeRow('+rowNum+');"></p>';
+	//var row = '<p id="rowNum'+rowNum+'">Name: <input type="text" name="qty'+rowNum+'" value="'+frm.add_qty.value+'"> Description: <input type="text" name="name'+rowNum+'" value="'+frm.add_name.value+'"> <input type="button" value="Remove" onclick="removeRow('+rowNum+');"></p>';
+    var row = '<p id="rowNum'+rowNum+'"> Name: <input type="text" name="qty'+rowNum+'" value="'+frm.add_qty.value+'"> Product Name: <input type="text" name="prod_name'+rowNum+'" value="'+frm.add_prod_name.value+'"> Description: <input type="text" name="name'+rowNum+'" value="'+frm.add_name.value+'"> Price: <input type="text" name="price'+rowNum+'" value="'+frm.add_price.value+'"> <input type="button" value="Remove" onclick="removeRow('+rowNum+');"> </p>';
 	jQuery('#product_form').append(row);
 	frm.add_qty.value = '';
+    frm.add_prod_name.value = '';
 	frm.add_name.value = '';
+    frm.add_price.value = '';
 }
 
 function removeRow(rnum) {
