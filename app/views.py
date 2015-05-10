@@ -1,6 +1,6 @@
 from app import app
 from flask import render_template, flash, request, url_for, redirect, session, Response, jsonify
-from forms import SignupForm, LoginForm, ProductAddForm
+from forms import SignupForm, LoginForm, ProductAddForm, EditProfileForm
 from models import Vendor
 from utility_funcs import get_password_hash, check_password, parse_product_catalog_multidict, get_coordinates
 import bson
@@ -124,7 +124,7 @@ def catalog():
     return render_template('product_catalog.html', loginform='', email=session['email'], vendor=vendor,
                            products=vendor.product_catalog)
 
-
+######### Signup not in use #############
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     form = SignupForm()
@@ -183,24 +183,6 @@ def login():
     return render_template('login.html', form=form)
 
 
-@app.route('/editprofile', methods=['GET', 'POST'])
-def editprofile():
-    if 'email' not in session:
-        return redirect(url_for('index'))
-
-    # Find the vendor in database with matching email address
-    vendors_with_email = Vendor.objects(email=session['email'])
-    if len(vendors_with_email) > 1:
-        print "Error : Multiple vendors in database with same email"
-
-    vendor = vendors_with_email.first()
-    prod_count = str(len(vendor.product_catalog))
-    form = SignupForm()
-
-    if vendor is None:
-        return redirect(url_for('index'))
-    else:
-        return render_template('profile.html', v = vendor, products=vendor.product_catalog, product_count=prod_count, form=form)
 
 
 @app.route('/api/vendor/type/<vendorid>', methods=['GET'])
