@@ -4,7 +4,8 @@ from app import db
 class Product(db.Document):
     name = db.StringField(max_length=255, required=True)
     description = db.StringField(max_length=255, required=True)
-
+    price = db.FloatField(min_value=0.0, required=True)
+    
 class Deal(db.Document):
     name = db.StringField(max_length=255, required=True)
     product_name = db.StringField(max_length=255, required=True)

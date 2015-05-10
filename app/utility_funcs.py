@@ -20,18 +20,20 @@ def check_password(pwdhash, password):
 def parse_product_catalog_multidict(f):
     products = []
     if 'add_qty' in f and 'add_name' in f:
-        if len(f['add_qty']) > 0 and len(f['add_name'])>0:
-            products.append(Product(name=f['add_qty'], description=f['add_name']))
+        if len(f['add_qty']) > 0 and len(f['add_name'])>0 and len(f['add_price'])>0:
+            products.append(Product(name=f['add_qty'], description=f['add_name'], price=f['add_price']))
 
     product_counter = 1
     next_item_name = 'qty' + str(product_counter)
     next_item_desc = 'name' + str(product_counter)
+    next_item_price = 'price' + str(product_counter)
     while next_item_name in f and next_item_desc in f:
         if len(f[next_item_name]) > 0 and len(f[next_item_desc]) > 0:
-            products.append(Product(name=f[next_item_name], description=f[next_item_desc]))
+            products.append(Product(name=f[next_item_name], description=f[next_item_desc], price=f[next_item_price]))
         product_counter += 1
         next_item_name = 'qty' + str(product_counter)
         next_item_desc = 'name' + str(product_counter)
+        next_item_price = 'price' + str(product_counter)
     return products
 
 def parse_deal_list_multidict(f):

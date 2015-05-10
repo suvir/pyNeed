@@ -44,6 +44,7 @@ class ProductEditRemoveForm(Form):
 class ProductAddForm(Form):
     name = StringField("name", validators=[DataRequired()])
     description = StringField("description")
+    price = FloatField("price", validators = [DataRequired()])
 
 class DealForm(Form):
     deal_name = StringField("deal_name", validators=[DataRequired()])
