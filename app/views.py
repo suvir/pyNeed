@@ -150,7 +150,7 @@ def deals():
             deal_name =request.form['editremove'].split("#")[1]
             product_name = request.form['editremove'].split("#")[2]
             description = request.form['editremove'].split("#")[3]
-            description = request.form['editremove'].split("#")[4]
+            price = request.form['editremove'].split("#")[4]
             vendors_with_email = Vendor.objects(email=session['email'])
             vendor = vendors_with_email.first()
 

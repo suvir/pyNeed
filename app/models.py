@@ -11,6 +11,11 @@ class Deal(db.Document):
     product_name = db.StringField(max_length=255, required=True)
     description = db.StringField(max_length=255)
     price = db.FloatField(min_value=0.0, required=True)
+    discount = db.FloatField(min_value=0.0, required=True)
+    category = db.StringField(max_length=255)
+    expiry_date = db.DateTimeField(required=True)
+
+
 
 class Vendor(db.Document):
     #id = db.StringField(primary_key=True)
