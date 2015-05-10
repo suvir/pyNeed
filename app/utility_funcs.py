@@ -1,6 +1,6 @@
 __author__ = 'suvir'
 from werkzeug import generate_password_hash, check_password_hash
-from models import Product
+from models import Product, Deal
 import urllib
 try:
     import simplejson
@@ -33,6 +33,38 @@ def parse_product_catalog_multidict(f):
         next_item_name = 'qty' + str(product_counter)
         next_item_desc = 'name' + str(product_counter)
     return products
+
+def parse_deal_list_multidict(f):
+    deals = []
+    if 'add_qty' in f and 'add_prod_name' in f and 'add_name' in f and 'add_price' in f:
+        if len(f['add_qty']) > 0 and len(f['add_prod_name'])>0 and len(f['add_name'])>0 and len(f['add_price'])>0:
+            try:
+                deal_price = float(f['add_price'])
+            except:
+                deal_price = 0.0
+            deals.append(Deal(name=f['add_qty'], product_name = f['add_prod_name'], description=f['add_name'], price = deal_price))
+
+    deal_counter = 1
+    next_item_name = 'qty' + str(deal_counter)
+    next_item_prod_name = 'prod_name' + str(deal_counter)
+    next_item_desc = 'name' + str(deal_counter)
+    next_item_price = 'price' + str(deal_counter)
+
+    while next_item_name in f and next_item_prod_name in f and next_item_desc in f and next_item_price in f:
+        if len(f[next_item_name]) > 0 and len(f[next_item_prod_name]) > 0 and len(f[next_item_desc]) > 0 and len(f[next_item_price]) > 0: 
+            try:
+                deal_price = float(f[next_item_price])
+            except:
+                deal_price = 0
+            deals.append(Deal(name=f[next_item_name], product_name = f[next_item_prod_name], description=f[next_item_desc], price = deal_price))
+        
+        deal_counter += 1
+        next_item_name = 'qty' + str(deal_counter)
+        next_item_prod_name = 'prod_name' + str(deal_counter)
+        next_item_desc = 'name' + str(deal_counter)
+        next_item_price = 'price' + str(deal_counter)
+
+    return deals
 
 def parse_product(f):
     product = Product()

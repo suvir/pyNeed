@@ -1,5 +1,5 @@
 from flask.ext.wtf import Form
-from wtforms import StringField, PasswordField, SelectField, SubmitField
+from wtforms import StringField, FloatField, PasswordField, SelectField, SubmitField
 from wtforms.validators import DataRequired, Email, EqualTo
 
 class LoginForm(Form):
@@ -44,3 +44,9 @@ class ProductEditRemoveForm(Form):
 class ProductAddForm(Form):
     name = StringField("name", validators=[DataRequired()])
     description = StringField("description")
+
+class DealForm(Form):
+    deal_name = StringField("deal_name", validators=[DataRequired()])
+    product_name = StringField("prod_name", validators=[DataRequired()])
+    description = StringField("description")
+    price = FloatField("price", validators = [DataRequired()])

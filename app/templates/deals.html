@@ -1,0 +1,154 @@
+<!-- extend from base layout -->
+{% extends "base.html" %}
+{% block content %}
+
+
+
+    <section id="about" class="about">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2>Please add deals here</h2>
+                    <p class="lead">At any time, the list below contains all deals added by you,
+                        and can be changed by pressing the Save Changes button at the bottom.</p>
+                </div>
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /.container -->
+    </section>
+
+<section id="services" class="services bg-primary">
+    <div class="container" id="product_list">
+        <div class="row text-center">
+            <table class="table" id="product_table">
+                <tr>
+                    <td><b>#</b></td>
+                    <td><b>Deal</b></td>
+                    <td><b>Product</b></td>
+                    <td><b>Description</b></td>
+                    <td><b>Price</b></td>
+                    <td><b>Actions</b></td>
+                </tr>
+               <form method="POST" id="delete_form">>
+                {%for deal in deals%}
+                    <tr>
+                        <td>{{deals.index(deal)+1}}</td>
+                        <td><input hidden="true" name="name" value="{{deal.name}}">{{deal.name}}</td>
+                        <td><input hidden="true" name="product_name" value="{{deal.product_name}}">{{deal.product_name}}</td>
+                        <td><input hidden="true" name="description" value="{{deal.description}}">{{deal.description}}</td>
+                        <td><input hidden="true" name="price" value="{{deal.price}}">{{deal.price}}</td>
+                        <td>
+                            <label for="{{deal.name}}_{{deal.product_name}}_{{deal.description}}_{{deal.price}}" class="btn editremove">
+                                <i class="fa fa-remove fa-lg"></i> Remove</label>
+                            <input id="{{deal.name}}_{{deal.product_name}}_{{deal.description}}_{{deal.price}}" type="submit" name="editremove" value="Remove#{{deal.name}}#{{deal.product_name}}#{{deal.description}}#{{deal.price}}" class="hidden"/>
+                        </td>
+                    </tr>
+                {%endfor%}
+                </form>
+                <tr>
+                        <td>
+
+                        </td>
+                    <form method="POST" id="product_form">
+                        <td>
+                            <div class="form-group">
+                                <input type="text" class="form-control input-sm" name="add_qty" placeholder="Name: "/>
+                            </div>
+                        </td>
+
+                        <td>
+                            <div class="form-group">
+                                <input type="text" class="form-control input-sm" name="add_prod_name" placeholder="Product Name: "/>
+                            </div>
+                        </td>
+
+
+                        <td>
+                            <div class="form-group">
+                                <input type="text" class="form-control input-sm" name="add_name" placeholder="Description: "/>
+                            </div>
+                        </td>
+
+                        <td>
+                            <div class="form-group">
+                                <input type="text" class="form-control input-sm" name="add_price" placeholder="Price: "/>
+                            </div>
+                        </td>
+
+                        <td>
+                            <div class="form-group">
+                                <input type="submit" class="btn btn-light" name="editremove" value="Add Deal">
+                                 <!--<input onclick="addRow(this.form);" type="button" value="Add row" class="btn btn-light"/>-->
+                            </div>
+                        </td>
+
+                    </form>
+                </tr>
+            </table>
+
+
+        </div>
+    </div>
+
+
+
+        <!--<div class="container">
+            <div class="row text-center">
+                <div class="row" id="itemRows">
+                    <form method="post">
+                    <div class="col-xs-5 col-md-5">
+                        <div class="form-group">
+                            <input type="text" class="form-control input-sm" name="add_qty" placeholder="Name: "/>
+                        </div>
+                    </div>
+                    <div class="col-xs-5 col-md-5">
+                        <div class="form-group">
+                         <input type="text" class="form-control input-sm" name="add_name" placeholder="Description: "/>
+                        </div>
+                    </div>
+                    <div class="col-xs-2 col-md-2">
+                        <div class="form-group">
+                             <input onclick="addRow(this.form);" type="button" value="Add row" class="btn btn-light"/>
+                        </div>
+                    </div>
+                        <br/>
+
+
+                </div>
+                <input type="submit" class="btn btn-light" name="ok" value="Save Changes">
+                </form>
+            </div>
+        </div> -->
+</section>
+
+<script type="text/javascript">
+
+    function submitEditRemoveForm(){
+        $('#delete_form').submit();
+    }
+
+
+
+    function scrollToElement(ele) {
+    $(window).scrollTop(ele.offset().top).scrollLeft(ele.offset().left);
+    }
+    scrollToElement($('#product_list'));
+var rowNum = 0;
+function addRow(frm) {
+	rowNum++;
+	console.log(rowNum);
+	//var row = '<p id="rowNum'+rowNum+'">Name: <input type="text" name="qty'+rowNum+'" value="'+frm.add_qty.value+'"> Description: <input type="text" name="name'+rowNum+'" value="'+frm.add_name.value+'"> <input type="button" value="Remove" onclick="removeRow('+rowNum+');"></p>';
+    var row = '<p id="rowNum'+rowNum+'"> Name: <input type="text" name="qty'+rowNum+'" value="'+frm.add_qty.value+'"> Product Name: <input type="text" name="prod_name'+rowNum+'" value="'+frm.add_prod_name.value+'"> Description: <input type="text" name="name'+rowNum+'" value="'+frm.add_name.value+'"> Price: <input type="text" name="price'+rowNum+'" value="'+frm.add_price.value+'"> <input type="button" value="Remove" onclick="removeRow('+rowNum+');"> </p>';
+	jQuery('#product_form').append(row);
+	frm.add_qty.value = '';
+    frm.add_prod_name.value = '';
+	frm.add_name.value = '';
+    frm.add_price.value = '';
+}
+
+function removeRow(rnum) {
+	jQuery('#rowNum'+rnum).remove();
+}
+</script>
+{% endblock %}
