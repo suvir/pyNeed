@@ -40,8 +40,11 @@ class MyTest(TestCase):
             with c.session_transaction() as sess:
                 sess['logged'] = True
                 sess['email'] = 'pet@pet.com'
+                self.assertContext(c.app.form,"")
             response = c.get('/index')
+        print response
         self.assert200(response)
+
 
 
 if __name__ == '__main__':
