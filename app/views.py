@@ -1,6 +1,6 @@
 from app import app
 from flask import render_template, flash, request, url_for, redirect, session
-from forms import SignupForm, LoginForm, ProductAddForm, DealForm
+from forms import SignupForm, LoginForm, ProductAddForm, DealForm, EditProfileForm
 from models import Vendor
 from utility_funcs import get_password_hash, check_password, parse_product_catalog_multidict, parse_deal_list_multidict, get_coordinates
 from decimal import Decimal
@@ -245,8 +245,10 @@ def login():
     return render_template('login.html', form=form)
 
 
-@app.route('/profile')
+@app.route('/profile', methods=['GET', 'POST'])
 def profile():
+    form = EditProfileForm()
+
     if 'email' not in session:
         return redirect(url_for('login'))
 
@@ -258,10 +260,40 @@ def profile():
     vendor = vendors_with_email.first()
     prod_count = str(len(vendor.product_catalog))
     vendor_deal_count = str(len(vendor.deal_list))
+
+    if form.validate_on_submit():
+        flash('Profile Edited')
+        print "Successfully validated profile edit form!!"
+        coords = get_coordinates(form.address.data+" "+form.city.data)
+        vendor.name=form.name.data
+        vendor.description=form.description.data
+        vendor.email=form.email.data
+        vendor.category=form.category.data
+        vendor.address=form.address.data
+        vendor.phone=form.phone.data
+        vendor.state=form.state.data
+        vendor.city=form.city.data
+        vendor.latitude=repr(coords[0])
+        vendor.longitude=repr(coords[1])
+        print "New city",form.city.data
+        vendor.save()
+        print "Finished updating profile"
+    else:
+        form.name.data = vendor.name
+        form.description.data = vendor.description
+        form.email.data = vendor.email
+        form.category.data = vendor.category
+        form.phone.data = vendor.phone
+        form.address.data = vendor.address
+        print "Vendor category", form.category.choices, form.category.data
+        print "Vendor form city", vendor.city
+        form.city.data = vendor.city
+        form.state.data = vendor.state
+
     if vendor is None:
         return redirect(url_for('login'))
     else:
-        return render_template('profile.html', v = vendor, products=vendor.product_catalog, deals = vendor.deal_list, product_count=prod_count, deal_count = vendor_deal_count)
+        return render_template('profile.html', v = vendor, products=vendor.product_catalog, deals = vendor.deal_list, product_count=prod_count, deal_count = vendor_deal_count, form=form)
 
 
 @app.route('/logout')

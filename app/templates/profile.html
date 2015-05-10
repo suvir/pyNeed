@@ -5,14 +5,57 @@
     <h2>Profile</h2>
     <h3>This is {{ session['email'] }}'s profile page</h3>
 
-<div><p> <b>Name</b> : {{ v.name }}</p></div>
-<div><p> <b>Description</b> : {{ v.description }}</p></div>
-<div><p> <b>Email Address</b> : {{ v.email }}</p></div>
-<div><p> <b>Type of business</b> : {{ v.category }}</p></div>
-<div><p> <b>Address</b> : {{ v.address }}</p></div>
-<div><p> <b>Phone number</b> : {{ v.phone }}</p></div>
-<div><p> <b>City</b> : {{ v.city }}</p></div>
-<div><p> <b>State</b> : {{ v.state }}</p></div>
+    <form action="" method="post" name="edit">
+
+
+  <p>
+      Business name: 
+          {{ form.name }}<br>
+          {% for error in form.name.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+          {% endfor %}
+  </p>
+
+  <p>
+      Type of Business: 
+          {{ form.category }}
+  </p>
+
+  <p>
+      A short description: 
+          {{ form.description }}
+  </p>
+
+  <p>
+      Email address: 
+          {{ form.email }}<br>
+          {% for error in form.email.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+          {% endfor %}
+  </p>
+
+  <p>
+      Phone number: {{ form.phone }}
+  </p>
+
+  <p>
+      Street address: {{ form.address }}
+  </p>
+
+  <p>
+      City: {{ form.city }}
+  </p>
+
+  <p>
+      State: {{ form.state }}
+  </p>
+
+
+
+    <p><input type="submit" value="Save!"></p>
+
+  </form>    
+
 
     <h3>You have added {{ product_count }} products to iNeed</h3>
     {% for product in products %}
@@ -23,5 +66,5 @@
     {% for deal in deals %}
     <div><p> <b>{{ deal.description }}</b> : {{ deal.price }}</p></div>
     {% endfor %}
-    
+  
 {% endblock %}
