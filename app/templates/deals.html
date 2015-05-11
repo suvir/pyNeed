@@ -10,7 +10,7 @@
                 <div class="col-lg-12 text-center">
                     <h2>Please add deals here</h2>
                     <p class="lead">At any time, the list below contains all deals added by you,
-                        and can be changed by pressing the Save Changes button at the bottom.</p>
+                        and can be removed by pressing the Remove button, and you may also add new deals using the form below.</p>
                 </div>
             </div>
             <!-- /.row -->
@@ -21,6 +21,54 @@
 <section id="services" class="services bg-primary">
     <div class="container" id="product_list">
         <div class="row text-center">
+            <h3>Add a new deal</h3><hr class="small">
+
+            <form method="POST" id="product_form">
+                <div class="col-xs-6 col-sm-6 col-md-6">
+                     <div class="form-group">
+                         <input type="text" class="form-control input-sm" name="add_qty" placeholder="Name: "/>
+                     </div>
+                </div>
+                <div class="col-xs-6 col-sm-6 col-md-6">
+                   <div class="form-group">
+                       <input type="text" class="form-control input-sm" name="add_prod_name" placeholder="Product Name: "/>
+                   </div>
+                </div>
+                <div class="form-group col-xs-3 col-sm-3 col-md-3">
+                   <select name="add_deal_type" class="form-control input-sm">
+                       <option value="dummy_deal_type">Select deal type..</option>
+                       <option value="dummy_deal_type">Deal</option>
+                       <option value="dummy_deal_type">Promotion</option>
+                   </select>
+                </div>
+                <div class="form-group col-xs-9 col-sm-9 col-md-9">
+                    <input type="text" class="form-control input-sm" name="add_name" placeholder="Description: "/>
+                </div>
+                <div class="col-xs-4 col-sm-4 col-md-4">
+                     <div class="form-group">
+                         <input type="text" class="form-control input-sm" name="add_price" placeholder="Price: "/>
+                     </div>
+                </div>
+                <div class="col-xs-4 col-sm-4 col-md-4">
+                   <div class="form-group">
+                       <input type="text" class="form-control input-sm" name="add_discount" placeholder="Discount: "/>
+                   </div>
+                </div>
+                <div class="col-xs-4 col-sm-4 col-md-4">
+                   <div class="form-group">
+                           <input type="text" class="form-control input-sm" name="add_expiry_date" placeholder="Pick an expiry date: " id="add_expiry_date"/>
+                   </div>
+                </div>
+                <div class="form-group">
+                    <input type="submit" class="btn btn-light" name="editremove" value="Add Deal">
+         <!--<input onclick="addRow(this.form);" type="button" value="Add row" class="btn btn-light"/>-->
+                </div>
+
+            </form>
+
+
+            <br/>
+            <h3>Your Deals</h3>
             <table class="table" id="product_table">
                 <tr>
                     <td><b>#</b></td>
@@ -46,45 +94,7 @@
                     </tr>
                 {%endfor%}
                 </form>
-                <tr>
-                        <td>
 
-                        </td>
-                    <form method="POST" id="product_form">
-                        <td>
-                            <div class="form-group">
-                                <input type="text" class="form-control input-sm" name="add_qty" placeholder="Name: "/>
-                            </div>
-                        </td>
-
-                        <td>
-                            <div class="form-group">
-                                <input type="text" class="form-control input-sm" name="add_prod_name" placeholder="Product Name: "/>
-                            </div>
-                        </td>
-
-
-                        <td>
-                            <div class="form-group">
-                                <input type="text" class="form-control input-sm" name="add_name" placeholder="Description: "/>
-                            </div>
-                        </td>
-
-                        <td>
-                            <div class="form-group">
-                                <input type="text" class="form-control input-sm" name="add_price" placeholder="Price: "/>
-                            </div>
-                        </td>
-
-                        <td>
-                            <div class="form-group">
-                                <input type="submit" class="btn btn-light" name="editremove" value="Add Deal">
-                                 <!--<input onclick="addRow(this.form);" type="button" value="Add row" class="btn btn-light"/>-->
-                            </div>
-                        </td>
-
-                    </form>
-                </tr>
             </table>
 
 
@@ -123,6 +133,45 @@
 </section>
 
 <script type="text/javascript">
+    $(document).ready(function() {
+        $('#add_expiry_date')
+            .datepicker({
+                format: 'mm-dd-yyyy'
+            })
+            .on('changeDate', function(e) {
+                // Revalidate the date field
+                $('#eventForm').formValidation('revalidateField', 'date');
+            });
+
+        $('#eventForm').formValidation({
+            framework: 'bootstrap',
+            icon: {
+                valid: 'glyphicon glyphicon-ok',
+                invalid: 'glyphicon glyphicon-remove',
+                validating: 'glyphicon glyphicon-refresh'
+            },
+            fields: {
+                name: {
+                    validators: {
+                        notEmpty: {
+                            message: 'The name is required'
+                        }
+                    }
+                },
+                date: {
+                    validators: {
+                        notEmpty: {
+                            message: 'The date is required'
+                        },
+                        date: {
+                            format: 'MM-DD-YYYY',
+                            message: 'The date is not a valid'
+                        }
+                    }
+                }
+            }
+        });
+    });
 
     function submitEditRemoveForm(){
         $('#delete_form').submit();

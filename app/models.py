@@ -13,7 +13,7 @@ class Deal(db.Document):
     price = db.FloatField(min_value=0.0, required=True)
     discount = db.FloatField(min_value=0.0, required=True)
     category = db.StringField(max_length=255)
-    expiry_date = db.DateTimeField(required=True)
+    expiry_date = db.StringField(required=True)
 
 
 
