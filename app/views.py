@@ -297,7 +297,7 @@ def profile():
     else:
         return render_template('profile.html',email=session['email'], v=vendor, products=vendor.product_catalog, deals = vendor.deal_list, product_count=prod_count, deal_count = vendor_deal_count, form=form)
 
-
+#Service that gets vendor type for a specific vendorid
 @app.route('/api/vendor/type/<vendorid>', methods=['GET'])
 def getvendortype(vendorid):
     if bson.ObjectId.is_valid(vendorid):
@@ -315,6 +315,7 @@ def getvendortype(vendorid):
         resp.status_code = 404
         return resp
 
+#Service that gets all vendor types
 @app.route('/api/vendor/types', methods=['GET'])
 def getallvendortypes():
     result = []
@@ -323,17 +324,50 @@ def getallvendortypes():
         for line in f:
             result.append(literal_eval(line.strip()))
 
-
     for type in result[0]:
         print type
         types={}
         types['type']=type[1]
         types_returned.append(types)
 
-
     resp = jsonify({'vendor_types':types_returned})
     resp.status_code = 200
     return resp
+
+#Service that returns a product catalog for a specific vendorid
+@app.route('/api/vendor/catalog/<vendorid>')
+def getvendorcatalog(vendorid):
+    if bson.ObjectId.is_valid(vendorid):
+        vendors = Vendor.objects(id=vendorid)
+        if len(vendors)>=1:
+            print "found matching vendors"
+            products = []
+            for product in vendors.first().product_catalog:
+                p = {}
+                p['_id'] = product.id
+                p['name'] = product.name
+                p['description'] = product.description
+                p['price'] = product.price
+                products.append(p)
+            resp = jsonify({'products': products})
+            resp.status_code = 200
+            return resp
+        else:
+            message = {
+                'status': 404,
+                'message': 'Not found, vendor with id:'+vendorid
+            }
+            resp = jsonify(message)
+            resp.status_code = 404
+            return resp
+    else:
+        message = {
+            'status': 404,
+            'message': 'Not found, vendor with id:'+vendorid
+        }
+        resp = jsonify(message)
+        resp.status_code = 404
+        return resp
 
 @app.route('/logout')
 def signout():
