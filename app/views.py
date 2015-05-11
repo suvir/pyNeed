@@ -20,12 +20,12 @@ def index():
             print "Error : Multiple vendors in database with same email"
 
         vendor = vendors_with_email.first()
-        if vendor is None:
+        if vendor is not None:
             prod_count = str(len(vendor.product_catalog))
             vendor_deal_count = str(len(vendor.deal_list))
             return render_template('index.html', form='null', v=vendor, products=vendor.product_catalog, product_count=prod_count, deal_count = vendor_deal_count, email=session['email'], loginform=loginform)
         else:
-            return redirect(url_for('login'))           
+            return redirect(url_for('login'))
 
     if request.method == 'POST' and form.validate():
         flash('Signup requested')
@@ -42,7 +42,7 @@ def index():
         new_vendor.save()
         # Add email to cookie
         session['email'] = new_vendor.email
-        return redirect(url_for('index'))
+        return redirect(url_for('profile'))
 
     if request.method == 'POST' and loginform.validate():
         vendors_with_email = Vendor.objects(email=loginform.email.data)
@@ -62,7 +62,7 @@ def index():
             flash('Login successful')
             print "Logged in successfully"
             session['email'] = loginform.email.data
-            return redirect(url_for('index'))
+            return redirect(url_for('profile'))
         else:
             loginform.password.errors.append("Incorrect password")
             flash('Login failed because incorrect password')
@@ -295,7 +295,7 @@ def profile():
     if vendor is None:
         return redirect(url_for('login'))
     else:
-        return render_template('profile.html', v=vendor, products=vendor.product_catalog, deals = vendor.deal_list, product_count=prod_count, deal_count = vendor_deal_count, form=form)
+        return render_template('profile.html',email=session['email'], v=vendor, products=vendor.product_catalog, deals = vendor.deal_list, product_count=prod_count, deal_count = vendor_deal_count, form=form)
 
 
 @app.route('/api/vendor/type/<vendorid>', methods=['GET'])

@@ -230,6 +230,7 @@
     </section>
 
     <!-- Call to Action -->
+{%if email!=''%}
     <aside class="call-to-action bg-primary">
         <div class="container">
             <div class="row">
@@ -244,10 +245,11 @@
                     </ul>
                     <br />
                     <a href="/catalog" class="btn btn-dark" >Manage Products</a>
+
                 </div>
             </div>
         </div>
     </aside>
-
+{%endif%}
 
 {% endblock %}

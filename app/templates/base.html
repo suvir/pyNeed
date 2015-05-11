@@ -38,7 +38,7 @@
 </head>
 
 <body>
-{%if email ==''%}
+{%if email==''%}
     <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
         <div class="modal-dialog  modal_size">
             <div class="modal-content">
@@ -84,7 +84,7 @@
             <li class="sidebar-brand">
                 <!--<a href="#top"  onclick = $("#menu-close").click(); >{%if email != ''%} Welcome {%else%} Login{%endif%}</a>-->
 
-                {%if email != ''%}
+                {%if 'email' in session%}
                     <a href="index#profile" id="email-session">{{email}}</a>
                 {%else%}
                     <a onclick="$('#loginModal').modal({'backdrop':'static'});"> Login ></a>
