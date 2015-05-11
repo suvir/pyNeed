@@ -335,7 +335,7 @@ def getallvendortypes():
     return resp
 
 #Service that returns a product catalog for a specific vendorid
-@app.route('/api/vendor/catalog/<vendorid>')
+@app.route('/api/vendor/catalog/<vendorid>', methods=['GET'])
 def getvendorcatalog(vendorid):
     if bson.ObjectId.is_valid(vendorid):
         vendors = Vendor.objects(id=vendorid)
