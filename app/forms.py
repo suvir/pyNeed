@@ -1,6 +1,14 @@
 from flask.ext.wtf import Form
-from wtforms import StringField, FloatField, PasswordField, SelectField, SubmitField
+from wtforms import StringField, FloatField, PasswordField, SelectField, SubmitField, DateField
 from wtforms.validators import DataRequired, Email, EqualTo
+from ast import literal_eval
+
+def VendorTypes():
+    result = []
+    with open('vendor_types', 'r') as f:
+        for line in f:
+            result.extend(literal_eval(line.strip()))
+    return result
 
 class LoginForm(Form):
     email = StringField("email", validators=[DataRequired(), Email()])
@@ -14,7 +22,7 @@ class SignupForm(Form):
     password = PasswordField('password',
                              validators=[DataRequired(), EqualTo('confirm', message='Passwords must match')])
     confirm = PasswordField('Repeat Password', validators=[DataRequired()])
-    category = SelectField("Type of Business", choices=[('restaurant', "Restaurant"), ('cafe', 'Cafe')])
+    category = SelectField("Type of Business", choices=VendorTypes())
     phone = StringField("Phone number")
     address = StringField("Address of business")
     city = StringField("City")
@@ -50,13 +58,16 @@ class DealForm(Form):
     deal_name = StringField("deal_name", validators=[DataRequired()])
     product_name = StringField("prod_name", validators=[DataRequired()])
     description = StringField("description")
-    price = FloatField("price", validators = [DataRequired()])
+    price = FloatField("price", validators=[DataRequired()])
+    discount = FloatField("discount", validators=[DataRequired()])
+    expiry_date = DateField("expiry_date",validators=[DataRequired()])
+    category = SelectField("deal_type",choices=["Deal", "Promotion"])
 
 class EditProfileForm(Form):
     name = StringField("name", validators=[DataRequired()])
     description = StringField("description")
     email = StringField("email", validators=[DataRequired(), Email()])
-    category = SelectField("Type of Business", choices=[('restaurant', "Restaurant"), ('cafe', 'Cafe')])
+    category = SelectField("Type of Business", choices=VendorTypes())
     phone = StringField("Phone number")
     address = StringField("Address of business")
     city = StringField("City")

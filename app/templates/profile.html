@@ -2,69 +2,135 @@
 {% extends "base.html" %}
 {% block content %}
 
-    <h2>Profile</h2>
-    <h3>This is {{ session['email'] }}'s profile page</h3>
-
-    <form action="" method="post" name="edit">
-
-
-  <p>
-      Business name: 
-          {{ form.name }}<br>
-          {% for error in form.name.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-          {% endfor %}
-  </p>
-
-  <p>
-      Type of Business: 
-          {{ form.category }}
-  </p>
-
-  <p>
-      A short description: 
-          {{ form.description }}
-  </p>
-
-  <p>
-      Email address: 
-          {{ form.email }}<br>
-          {% for error in form.email.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-          {% endfor %}
-  </p>
-
-  <p>
-      Phone number: {{ form.phone }}
-  </p>
-
-  <p>
-      Street address: {{ form.address }}
-  </p>
-
-  <p>
-      City: {{ form.city }}
-  </p>
-
-  <p>
-      State: {{ form.state }}
-  </p>
+<section id="about" class="about">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <h2> Profile</h2>
+                <p class="lead">Hi, <i>{{ session['email'] }}</i><br>At any time, in order change the different values that you want, simply change the text in the boxes and save changes.</p>
+            </div>
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container -->
+</section>
 
 
+<section id="services" class="services bg-primary">
+    <div class="container" id="product_list">
+        <div class="row">
+            <div class="row">
+                        <form action="" method="post" name="edit">
+                        <h2 class="text-center">Primary Information</h2>
+                            <hr class="small">
+                        <div class="row" id="info">
 
-    <p><input type="submit" value="Save!"></p>
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                <div class="form-group" id="name">
+                                    <label for="compname" class="text-left">Name:</label>
+                                    {{form.name(class_="form-control input-sm" ,placeholder="Company Name:", id="compname")}}
+                                    {% for error in form.name.errors %}
+                                        <span style="color: red;">[{{ error }}]</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                <div class="form-group" id="email">
+                                    <label for="email" class="text-left">Email:</label>
+                                     {{form.email(class_="form-control input-sm hidden" ,placeholder="Email:")}}
+                                    {% for error in form.email.errors %}
+                                        <span style="color: red;">[{{ error }}]</span>
+                                    {% endfor %}
+                                    <p>{{v.email}}</p>
+                                </div>
+                            </div>
+                        </div>
 
-  </form>    
+                        <div class="form-group" id="descript">
+                            <label for="descript" class="text-left">Description:</label>
+                           {{form.description(class_="form-control input-sm" ,placeholder="Description:", id="descr")}}
+
+                        </div>
 
 
-    <h3>You have added {{ product_count }} products to iNeed</h3>
-    {% for product in products %}
-    <div><p> <b>{{ product.name }}</b> : {{ product.description }}</p></div>
-    {% endfor %}
+                        <br/>
+                        <div class="form-group">
+                            <label >Location</label>
+                            {{form.address(class_="form-control input-sm" ,placeholder="Street Address:", id="addr")}}
+                        </div>
+                        <div class="form-group">
+                            {{form.city(class_="form-control input-sm" ,placeholder="City:", id="city")}}
+                        </div>
 
-    <h3>You have added {{ deal_count }} deals to iNeed</h3>
-    {% for deal in deals %}
-    <div><p> <b>{{ deal.description }}</b> : {{ deal.price }}</p></div>
-    {% endfor %}
-  
+                        <div class="row">
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                {{form.state(class_="form-control input-sm", id="state")}}
+
+                            </div>
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                <div class="form-group">
+                                    {{form.phone(class_="form-control input-sm" ,placeholder="Phone Number:", id="phone_num")}}
+                                </div>
+                            </div>
+                        </div>
+
+
+                            <br/>
+                        <div class="form-group">
+                            <label for="vendor_type" class="label vendor-label">Vendor Type</label>
+                            {{form.category(class_="form-control input-sm")}}
+                        </div>
+
+                        <input type="submit" value="Save Changes" class="btn btn-dark">
+
+                    </form>
+                    </div>
+                    <!-- /.row (nested) -->
+                </div>
+                <!-- /.col-lg-10 -->
+        </div>
+    </div>
+</section>
+
+<section id="product_info" class="about">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <h2>You have added {{ product_count }} products to iNeed</h2>
+                <hr class="small">
+                     <ul class="list-unstyled">
+                        {% for product in products %}
+                            <li><i class="fa fa-circle-o"></i><b>{{ product.name }}</b> : {{ product.description }}</li>
+                        {% endfor %}
+
+                        <a href="/catalog" class="btn btn-dark" >Manage Products</a>
+                    </ul>
+            </div>
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container -->
+</section>
+
+
+<aside class="call-to-action bg-primary">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2> You have added {{ deal_count }} deals to iNeed </h2>
+                    <hr class="small"/>
+                    <ul class="list-unstyled">
+                        {% for deal in deals %}
+                            <li><i class="fa fa-circle-o"></i><b>{{ deal.description }}</b> : {{ deal.price }} </li>
+                        {% endfor %}
+
+                    <a href="/deals" class="btn btn-light" >Manage Deals</a>
+                    </ul>
+                    <br />
+
+                </div>
+            </div>
+        </div>
+    </aside>
+
 {% endblock %}

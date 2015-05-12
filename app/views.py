@@ -1,9 +1,10 @@
 from app import app
-from flask import render_template, flash, request, url_for, redirect, session
+from flask import render_template, flash, request, url_for, redirect, session, Response, jsonify
 from forms import SignupForm, LoginForm, ProductAddForm, DealForm, EditProfileForm
 from models import Vendor
 from utility_funcs import get_password_hash, check_password, parse_product_catalog_multidict, parse_deal_list_multidict, get_coordinates
-from decimal import Decimal
+from ast import literal_eval
+import bson
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -19,12 +20,12 @@ def index():
             print "Error : Multiple vendors in database with same email"
 
         vendor = vendors_with_email.first()
-        if vendor is None:
+        if vendor is not None:
             prod_count = str(len(vendor.product_catalog))
             vendor_deal_count = str(len(vendor.deal_list))
-            return render_template('index.html', form='null', v = vendor, products=vendor.product_catalog, product_count=prod_count, deal_count = vendor_deal_count, email=session['email'], loginform=loginform)
+            return render_template('index.html', form='null', v=vendor, products=vendor.product_catalog, product_count=prod_count, deal_count = vendor_deal_count, email=session['email'], loginform=loginform)
         else:
-            return redirect(url_for('login'))           
+            return redirect(url_for('login'))
 
     if request.method == 'POST' and form.validate():
         flash('Signup requested')
@@ -41,7 +42,7 @@ def index():
         new_vendor.save()
         # Add email to cookie
         session['email'] = new_vendor.email
-        return redirect(url_for('index'))
+        return redirect(url_for('profile'))
 
     if request.method == 'POST' and loginform.validate():
         vendors_with_email = Vendor.objects(email=loginform.email.data)
@@ -61,13 +62,13 @@ def index():
             flash('Login successful')
             print "Logged in successfully"
             session['email'] = loginform.email.data
-            return redirect(url_for('index'))
+            return redirect(url_for('profile'))
         else:
             loginform.password.errors.append("Incorrect password")
             flash('Login failed because incorrect password')
 
     print(loginform.errors)
-    return render_template('index.html', form=form, email='', loginform=loginform, v = '')
+    return render_template('index.html', form=form, email='', loginform=loginform, v='')
 
 
 @app.route('/catalog', methods=['GET', 'POST', 'DELETE'])
@@ -149,7 +150,7 @@ def deals():
             deal_name =request.form['editremove'].split("#")[1]
             product_name = request.form['editremove'].split("#")[2]
             description = request.form['editremove'].split("#")[3]
-            description = request.form['editremove'].split("#")[4]
+            price = request.form['editremove'].split("#")[4]
             vendors_with_email = Vendor.objects(email=session['email'])
             vendor = vendors_with_email.first()
 
@@ -209,7 +210,7 @@ def signup():
         session['email'] = new_vendor.email
         return redirect(url_for('profile'))
 
-    return render_template('signup.html', form=form,email=email)
+    return render_template('signup.html', form=form,email='')
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -290,11 +291,83 @@ def profile():
         form.city.data = vendor.city
         form.state.data = vendor.state
 
+
     if vendor is None:
         return redirect(url_for('login'))
     else:
-        return render_template('profile.html', v = vendor, products=vendor.product_catalog, deals = vendor.deal_list, product_count=prod_count, deal_count = vendor_deal_count, form=form)
+        return render_template('profile.html',email=session['email'], v=vendor, products=vendor.product_catalog, deals = vendor.deal_list, product_count=prod_count, deal_count = vendor_deal_count, form=form)
 
+#Service that gets vendor type for a specific vendorid
+@app.route('/api/vendor/type/<vendorid>', methods=['GET'])
+def getvendortype(vendorid):
+    if bson.ObjectId.is_valid(vendorid):
+        vendors = Vendor.objects(id=vendorid)
+        if len(vendors)>=1:
+            resp = jsonify({'vendor_type':vendors.first().category})
+            resp.status_code = 200
+            return resp
+    else:
+        message={
+            'status':404,
+            'message': 'Not found, vendor with id:'+vendorid
+        }
+        resp = jsonify(message)
+        resp.status_code = 404
+        return resp
+
+#Service that gets all vendor types
+@app.route('/api/vendor/types', methods=['GET'])
+def getallvendortypes():
+    result = []
+    types_returned = []
+    with open('vendor_types', 'r') as f:
+        for line in f:
+            result.append(literal_eval(line.strip()))
+
+    for type in result[0]:
+        print type
+        types={}
+        types['type']=type[1]
+        types_returned.append(types)
+
+    resp = jsonify({'vendor_types':types_returned})
+    resp.status_code = 200
+    return resp
+
+#Service that returns a product catalog for a specific vendorid
+@app.route('/api/vendor/catalog/<vendorid>', methods=['GET'])
+def getvendorcatalog(vendorid):
+    if bson.ObjectId.is_valid(vendorid):
+        vendors = Vendor.objects(id=vendorid)
+        if len(vendors)>=1:
+            print "found matching vendors"
+            products = []
+            for product in vendors.first().product_catalog:
+                p = {}
+                p['_id'] = product.id
+                p['name'] = product.name
+                p['description'] = product.description
+                p['price'] = product.price
+                products.append(p)
+            resp = jsonify({'products': products})
+            resp.status_code = 200
+            return resp
+        else:
+            message = {
+                'status': 404,
+                'message': 'Not found, vendor with id:'+vendorid
+            }
+            resp = jsonify(message)
+            resp.status_code = 404
+            return resp
+    else:
+        message = {
+            'status': 404,
+            'message': 'Not found, vendor with id:'+vendorid
+        }
+        resp = jsonify(message)
+        resp.status_code = 404
+        return resp
 
 @app.route('/logout')
 def signout():
