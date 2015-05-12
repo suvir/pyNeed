@@ -5,3 +5,5 @@ config.py
 flask/
 .DS_STORE
 Procfile
+.coverage
+coverage.txt

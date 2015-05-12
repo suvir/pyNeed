@@ -35,12 +35,11 @@ class MyTest(TestCase):
         response = self.client.get("/catalog")
         self.assertRedirects(response,"/login")
 
-    def test_login_with_email_in_session(self):
+    def test_index_with_email_in_session(self):
         with self.client as c:
             with c.session_transaction() as sess:
                 sess['logged'] = True
                 sess['email'] = 'pet@pet.com'
-                self.assertContext(c.app.form,"")
             response = c.get('/index')
         print response
         self.assert200(response)
