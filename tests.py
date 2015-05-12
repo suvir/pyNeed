@@ -1,5 +1,6 @@
 __author__ = 'Petter'
 import unittest
+import json
 from app import app
 from flask_testing import TestCase
 
@@ -28,8 +29,8 @@ class MyTest(TestCase):
         self.assertRedirects(response,"/login")
 
     def test_profile_without_valid_email(self):
-        response = self.client.get("/editprofile")
-        self.assertRedirects(response,"/index")
+        response = self.client.get("/profile")
+        self.assertRedirects(response,"/login")
 
     def test_catalog_without_valid_email(self):
         response = self.client.get("/catalog")
@@ -42,7 +43,40 @@ class MyTest(TestCase):
                 sess['email'] = 'pet@pet.com'
             response = c.get('/index')
         print response
+        self.assertRedirects(response,"/login")
+
+    def test_api_vendor_types(self):
+        response = self.client.get("/api/vendor/types")
         self.assert200(response)
+        self.assertTrue(is_json(response.data))
+
+    def test_api_vendor_types_with_invalid_id(self):
+        response = self.client.get("/api/vendor/type/0001234invalid")
+        self.assert404(response)
+        self.assertTrue(is_json(response.data))
+
+    def test_api_vendor_types_with_valid_id(self):
+        response = self.client.get("/api/vendor/type/insertvalidid")#todo: Insert a valid id
+        self.assert200(response)
+        self.assertTrue(is_json(response.data))
+
+    def test_api_vendor_catalog_with_valid_id(self):
+        response = self.client.get("/api/vendor/catalog/insertvalidid")#todo: Insert a valid id
+        self.assert200(response)
+        self.assertTrue(is_json(response.data))
+
+    def test_api_vendor_catalog_with_invalid_id(self):
+        response = self.client.get("/api/vendor/catalog/0001234invalid")
+        self.assert404(response)
+        self.assertTrue(is_json(response.data))
+
+
+def is_json(myjson):
+  try:
+    json_object = json.loads(myjson)
+  except ValueError, e:
+    return False
+  return True
 
 
 
