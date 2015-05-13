@@ -8,7 +8,7 @@
       {% endfor %}-->
 
 
-    <!-- About -->
+    <!-- About iNeed -->
     <section id="about" class="about">
         <div class="container">
             <div class="row">
@@ -23,73 +23,8 @@
         <!-- /.container -->
     </section>
 
-    <!-- Services -->
-    <!-- The circle icons use Font Awesome's stacked icon classes. For more information, visit http://fontawesome.io/examples/ -->
-    <section id="services" class="services bg-primary">
-        <div class="container">
-            <div class="row text-center">
-                <div class="col-lg-10 col-lg-offset-1">
-                    <h2>Our Services</h2>
-                    <hr class="small">
-                    <div class="row">
-                        <div class="col-md-4 col-sm-6">
-                            <div class="service-item">
-                                <span class="fa-stack fa-4x">
-                                <i class="fa fa-circle fa-stack-2x"></i>
-                                <i class="fa fa-book fa-stack-1x text-primary"></i>
-                            </span>
-                                <h4>
-                                    <strong>Product Catalog</strong>
-                                </h4>
-                                <p>Provide a product catalog, adding new exciting items and promotions.</p>
-
-                            </div>
-                        </div>
-                        <div class="col-md-4 col-sm-6">
-                            <div class="service-item">
-                                <span class="fa-stack fa-4x">
-                                <i class="fa fa-circle fa-stack-2x"></i>
-                                <i class="fa fa-money fa-stack-1x text-primary"></i>
-                            </span>
-                                <h4>
-                                    <strong>Deal &amp; Promotions</strong>
-                                </h4>
-                                <p>Promote deals on new items by logging in and adding these to your profile.</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4 col-sm-6">
-                            <div class="service-item">
-                                <span class="fa-stack fa-4x">
-                                <i class="fa fa-circle fa-stack-2x"></i>
-                                <i class="fa fa-compass fa-stack-1x text-primary"></i>
-                            </span>
-                                <h4>
-                                    <strong>Member Proximity</strong>
-                                </h4>
-                                <p>Consumers of iNeed are notified of deals when in proximity of the venue. </p>
-                            </div>
-                        </div>
-
-                    </div>
-                    <!-- /.row (nested) -->
-                </div>
-                <!-- /.col-lg-10 -->
-            </div>
-            <!-- /.row -->
-        </div>
-        <!-- /.container -->
-    </section>
-
-
-    <!-- Callout -->
-    <aside class="callout">
-        <div class="text-vertical-center">
-            <h1>Vendor Centered Solutions</h1>
-        </div>
-    </aside>
-
     <!-- Profile -->
-    <section id="profile" class="portfolio">
+    <section id="profile" class="enrollment_profile bg-primary">
         <div class="container">
             <div class="row">
                 {% if email == '' %}
@@ -98,7 +33,7 @@
                     <hr class="small">
                     <div class="row">
                         <form action="/index" method="post" name="signup">
-                        <label for="info" class="label vendor-label">Company Information</label>
+
                         <div class="row" id="info">
 
                             <div class="col-xs-6 col-sm-6 col-md-6">
@@ -150,7 +85,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="label vendor-label">Location</label>
+
                             <!--<input type="text" name="adress" id="adress_line1" class="form-control input-sm" placeholder="Address">-->
                             {{form.address(class_="form-control input-sm" ,placeholder="Street Address:")}}
                         </div>
@@ -180,11 +115,11 @@
 
 
                         <div class="form-group">
-                            <label for="vendor_type" class="label vendor-label">Vendor Type</label>
+
                             {{form.category(class_="form-control input-sm")}}
                         </div>
                         <hr class="small">
-                        <input type="submit" value="Register" class="btn btn-dark">
+                        <input type="submit" name="submit" value="Register" class="btn btn-dark">
 
                     </form>
                     </div>
@@ -208,17 +143,6 @@
                     </ul>
                     <br/>
 
-                    <ul class="list-inline">
-                        <li>
-                            <a href="#"><i class="fa fa-facebook fa-fw fa-3x"></i></a>
-                        </li>
-                        <li>
-                            <a href="#"><i class="fa fa-twitter fa-fw fa-3x"></i></a>
-                        </li>
-                        <li>
-                            <a href="#"><i class="fa fa-dribbble fa-fw fa-3x"></i></a>
-                        </li>
-                    </ul>
                 </div>
             </div>
         </div>
@@ -229,27 +153,57 @@
         <!-- /.container -->
     </section>
 
-    <!-- Call to Action -->
-{%if email!=''%}
-    <aside class="call-to-action bg-primary">
+    <!-- Services we offer -->
+    <section id="services" class="services">
         <div class="container">
-            <div class="row">
-                <div class="col-lg-12 text-center">
-                    <h3> {{v.name}} products available through iNeed : {{product_count}} </h3>
-                    <h3> {{v.name}} deals available through iNeed : {{deal_count}} </h3>
-                    <hr class="small"/>
-                    <ul class="list-unstyled">
-                        {% for product in products %}
-                            <li><i class="fa fa-circle-o"></i><b> {{ product.name }}</b> : {{ product.description }} </li>
-                        {% endfor %}
-                    </ul>
-                    <br />
-                    <a href="/catalog" class="btn btn-dark" >Manage Products</a>
+            <div class="row text-center">
+                <div class="col-lg-10 col-lg-offset-1">
+                    <h2>Our Services</h2>
+                    <hr class="small">
+                    <div class="row">
+                        <div class="col-md-4 col-sm-6">
+                            <div class="service-item">
+                                <span class="fa-stack fa-4x">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-book fa-stack-1x text-primary"></i>
+                            </span>
+                                <h4>
+                                    <strong>Product Catalog</strong>
+                                </h4>
+                                <p>Provide a product catalog, adding new exciting items and promotions.</p>
 
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                            <div class="service-item">
+                                <span class="fa-stack fa-4x">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-money fa-stack-1x text-primary"></i>
+                            </span>
+                                <h4>
+                                    <strong>Deal &amp; Promotions</strong>
+                                </h4>
+                                <p>Promote deals on new items by logging in and adding these to your profile.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                            <div class="service-item">
+                                <span class="fa-stack fa-4x">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-compass fa-stack-1x text-primary"></i>
+                            </span>
+                                <h4>
+                                    <strong>Member Proximity</strong>
+                                </h4>
+                                <p>Consumers of iNeed are notified of deals when in proximity of the venue. </p>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
             </div>
         </div>
-    </aside>
-{%endif%}
+    <hr class="small">
+    </section>
 
 {% endblock %}

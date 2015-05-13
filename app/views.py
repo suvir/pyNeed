@@ -13,6 +13,7 @@ def index():
     form = SignupForm(request.form)
     loginform = LoginForm()
 
+
     if 'email' in session:
          # Find the vendor in database with matching email address
         vendors_with_email = Vendor.objects(email=session['email'])
@@ -27,7 +28,7 @@ def index():
         else:
             return redirect(url_for('login'))
 
-    if request.method == 'POST' and form.validate():
+    if request.method == 'POST' and request.form['submit']=="Register" and form.validate_on_submit():
         flash('Signup requested')
         print "Successfully validated form!!"
         print "name received", form.name, 'data:', form.name.data
@@ -44,7 +45,7 @@ def index():
         session['email'] = new_vendor.email
         return redirect(url_for('profile'))
 
-    if request.method == 'POST' and loginform.validate():
+    elif request.method == 'POST' and request.form['submit']=="Login" and loginform.validate_on_submit():
         vendors_with_email = Vendor.objects(email=loginform.email.data)
         if len(vendors_with_email) > 1:
             print "Error : Multiple vendors in database with same email"
@@ -67,6 +68,7 @@ def index():
             loginform.password.errors.append("Incorrect password")
             flash('Login failed because incorrect password')
 
+    print "Login form errors below:"
     print(loginform.errors)
     return render_template('index.html', form=form, email='', loginform=loginform, v='')
 
@@ -295,7 +297,7 @@ def profile():
     if vendor is None:
         return redirect(url_for('login'))
     else:
-        return render_template('profile.html',email=session['email'], v=vendor, products=vendor.product_catalog, deals = vendor.deal_list, product_count=prod_count, deal_count = vendor_deal_count, form=form)
+        return render_template('profile.html',email=session['email'], v=vendor, products=vendor.product_catalog, deals = vendor.deal_list, product_count=prod_count, deal_count = vendor_deal_count, form=form, loginform='')
 
 #Service that gets vendor type for a specific vendorid
 @app.route('/api/vendor/type/<vendorid>', methods=['GET'])
