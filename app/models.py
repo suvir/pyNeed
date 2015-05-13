@@ -8,17 +8,18 @@ class Product(db.Document):
     
 class Deal(db.Document):
     name = db.StringField(max_length=255, required=True)
-    product_name = db.StringField(max_length=255, required=True)
     description = db.StringField(max_length=255)
     price = db.FloatField(min_value=0.0, required=True)
     discount = db.FloatField(min_value=0.0, required=True)
     category = db.StringField(max_length=255)
-    expiry_date = db.StringField(required=True)
-
+    expiry_date = db.DateTimeField(required=True)
+    coupon_code = db.FloatField()
+    product_name = db.StringField(max_length=255, required=True)
+    redeem_count = db.FloatField(min_value=0.0)
+    send_count = db.FloatField(min_value=0.0)
 
 
 class Vendor(db.Document):
-    #id = db.StringField(primary_key=True)
     name = db.StringField(max_length=255, required=True)
     description = db.StringField(max_length=255)
     email = db.StringField(max_length=255, required=True)
@@ -37,4 +38,5 @@ class Vendor(db.Document):
         'indexes': ['-id'],
         'ordering': ['-id']
     }
+
 
