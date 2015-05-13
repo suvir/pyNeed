@@ -7,3 +7,4 @@ flask/
 Procfile
 .coverage
 coverage.txt
+tmp/
