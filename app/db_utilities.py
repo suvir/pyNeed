@@ -1,5 +1,4 @@
 import requests
-# from flask import jsonify
 import json
 from models import Vendor, Deal, Product
 
@@ -106,13 +105,13 @@ def put_vendor_to_db(vendor_model):
     # PUT products in database
     for prod in vendor_model.product_catalog:
         pid, product = get_single_product(vid, prod.name)
-        json_product = product_to_json(product)
+        json_product = product_to_json(prod, vid)
         r = requests.put(product_url + '/' + pid, data=json_product)
 
     # PUT deals in database
     for d in vendor_model.deal_list:
         deal_id, deal = get_single_deal(vid, d.name)
-        json_deal = deals_to_json(deal)
+        json_deal = deals_to_json(d, vid, vendor_model.name)
         r = requests.put(deal_url + '/' + deal_id, data=json_deal)
     return 0
 
@@ -212,6 +211,6 @@ def get_product_from_id(prod_ids):
     try:
         prod = r.json()
     except ValueError:
-        print "Encountered error"
+        print "Encountered error. No product found."
         return ''
     return prod['prodName']
