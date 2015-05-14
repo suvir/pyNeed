@@ -2,8 +2,10 @@ from app import app
 from flask import render_template, flash, request, url_for, redirect, session, Response, jsonify
 from forms import SignupForm, LoginForm, ProductAddForm, DealForm, EditProfileForm
 from models import Vendor
-from utility_funcs import get_password_hash, check_password, parse_product_catalog_multidict, parse_deal_list_multidict, get_coordinates
+from utility_funcs import get_password_hash, check_password, parse_product_catalog_multidict, parse_deal_list_multidict, \
+    get_coordinates
 from ast import literal_eval
+from db_utilities import *
 import bson
 
 
@@ -13,9 +15,8 @@ def index():
     form = SignupForm(request.form)
     loginform = LoginForm()
 
-
     if 'email' in session:
-         # Find the vendor in database with matching email address
+        # Find the vendor in database with matching email address
         vendors_with_email = Vendor.objects(email=session['email'])
         if len(vendors_with_email) > 1:
             print "Error : Multiple vendors in database with same email"
@@ -24,33 +25,33 @@ def index():
         if vendor is not None:
             prod_count = str(len(vendor.product_catalog))
             vendor_deal_count = str(len(vendor.deal_list))
-            return render_template('index.html', form='null', v=vendor, products=vendor.product_catalog, product_count=prod_count, deal_count = vendor_deal_count, email=session['email'], loginform=loginform)
+            return render_template('index.html', form='null', v=vendor, products=vendor.product_catalog,
+                                   product_count=prod_count, deal_count=vendor_deal_count, email=session['email'],
+                                   loginform=loginform)
         else:
             return redirect(url_for('login'))
 
-    if request.method == 'POST' and request.form['submit']=="Register" and form.validate_on_submit():
+    if request.method == 'POST' and request.form['submit'] == "Register" and form.validate_on_submit():
         flash('Signup requested')
         print "Successfully validated form!!"
         print "name received", form.name, 'data:', form.name.data
         # Hash the password and save to database
         pwdhash = get_password_hash(form.password.data)
-        coords = get_coordinates(form.address.data+" "+form.city.data)
+        coords = get_coordinates(form.address.data + " " + form.city.data)
         print coords[0]
         print coords[1]
         new_vendor = Vendor(name=form.name.data, description=form.description.data, email=form.email.data,
                             category=form.category.data, address=form.address.data, phone=form.phone.data,
-                            state=form.state.data, city=form.city.data, pwdhash=pwdhash, latitude=repr(coords[0]), longitude=repr(coords[1]))
-        new_vendor.save()
+                            state=form.state.data, city=form.city.data, pwdhash=pwdhash, latitude=repr(coords[0]),
+                            longitude=repr(coords[1]))
+        # new_vendor.save()
+        post_vendor_to_db(new_vendor)
         # Add email to cookie
         session['email'] = new_vendor.email
         return redirect(url_for('profile'))
 
-    elif request.method == 'POST' and request.form['submit']=="Login" and loginform.validate_on_submit():
-        vendors_with_email = Vendor.objects(email=loginform.email.data)
-        if len(vendors_with_email) > 1:
-            print "Error : Multiple vendors in database with same email"
-
-        vendor = vendors_with_email.first()
+    elif request.method == 'POST' and request.form['submit'] == "Login" and loginform.validate_on_submit():
+        vid, vendor = get_vendor_from_db(loginform.email.data)
 
         # First check that a vendor with this email address exists in database
         if vendor is None:
@@ -80,18 +81,18 @@ def catalog():
         return redirect(url_for('login'))
 
     if 'email' in session:
-        vendors_with_email = Vendor.objects(email=session['email'])
-        vendor = vendors_with_email.first()
+        vid, vendor = get_vendor_from_db(email=session['email'])
+        if vendor is None:
+            print "No such vendor in database"
 
     if request.method == 'POST':
         print(request.form)
         if request.form['editremove'].split("#")[0] == 'Remove':
             print "INSIDE REMOVE"
             f = request.form
-            product_name =request.form['editremove'].split("#")[1]
+            product_name = request.form['editremove'].split("#")[1]
             product_description = request.form['editremove'].split("#")[2]
-            vendors_with_email = Vendor.objects(email=session['email'])
-            vendor = vendors_with_email.first()
+            vid, vendor = get_vendor_from_db(email=session['email'])
 
             print product_name
             for product in vendor.product_catalog:
@@ -99,15 +100,13 @@ def catalog():
                 if product.name == product_name and product.description == product_description:
                     print"INSIDE IF"
                     vendor.product_catalog.remove(product)
+                    delete_single_product(vid, product)
                     break
-
-            vendor.save()
 
         elif request.form['editremove'].split("#")[0] == 'Edit':
             print "Editing"
 
         elif request.form['editremove'] == 'Add Product':
-            vendors_with_email = Vendor.objects(email=session['email'])
             print "Inside ADD:.."
             f = request.form
 
@@ -115,12 +114,11 @@ def catalog():
             print products
 
             # Find the vendor in database with matching email address
-
-            if len(vendors_with_email) > 1:
-                print "Error : Multiple vendors in database with same email"
-            vendor = vendors_with_email.first()
+            vid, vendor = get_vendor_from_db(session['email'])
             vendor.product_catalog.extend(products)
-            vendor.save()
+
+            for prod in products:
+                post_single_product(vid, prod)
             flash("Added products to database")
 
         else:
@@ -140,8 +138,9 @@ def deals():
 
     # Authentication Guard 2
     if 'email' in session:
-        vendors_with_email = Vendor.objects(email=session['email'])
-        vendor = vendors_with_email.first()
+        vid, vendor = get_vendor_from_db(email=session['email'])
+        if vendor is None:
+            print "No such vendor in database"
 
     # Received a form
     if request.method == 'POST':
@@ -149,7 +148,7 @@ def deals():
         if request.form['editremove'].split("#")[0] == 'Remove':
             print "INSIDE REMOVE"
             f = request.form
-            deal_name =request.form['editremove'].split("#")[1]
+            deal_name = request.form['editremove'].split("#")[1]
             product_name = request.form['editremove'].split("#")[2]
             description = request.form['editremove'].split("#")[3]
             price = request.form['editremove'].split("#")[4]
@@ -157,19 +156,18 @@ def deals():
             vendor = vendors_with_email.first()
 
             print product_name
-            
+
             for deal in vendor.deal_list:
                 if deal.name == deal_name and product_name == deal.product_name:
                     print "INSIDE IF FOR DEAL"
                     vendor.deal_list.remove(deal)
-
-            vendor.save()
+                    delete_single_deal(vid, deal, vendor.name)
 
         elif request.form['editremove'].split("#")[0] == 'Edit':
             print "Editing"
 
         elif request.form['editremove'] == 'Add Deal':
-            vendors_with_email = Vendor.objects(email=session['email'])
+            vid, vendor = get_vendor_from_db(session['email'])
             print "Inside adding deals.."
             f = request.form
 
@@ -177,18 +175,16 @@ def deals():
             print deals
 
             # Find the vendor in database with matching email address
-
-            if len(vendors_with_email) > 1:
-                print "Error : Multiple vendors in database with same email"
-            vendor = vendors_with_email.first()
             vendor.deal_list.extend(deals)
-            vendor.save()
+            for deal in deals:
+                post_single_deal(vid, deal, vendor.name)
             flash("Added deals to database")
 
         else:
             print "Not inside any form..."
 
     return render_template('deals.html', loginform='', email=session['email'], vendor=vendor, deals=vendor.deal_list)
+
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -207,12 +203,12 @@ def signup():
         new_vendor = Vendor(name=form.name.data, description=form.description.data, email=form.email.data,
                             category=form.category.data, address=form.address.data, phone=form.phone.data,
                             state=form.state.data, city=form.city.data, pwdhash=pwdhash)
-        new_vendor.save()
+        post_vendor_to_db(new_vendor)
         # Add email to cookie
         session['email'] = new_vendor.email
         return redirect(url_for('profile'))
 
-    return render_template('signup.html', form=form,email='')
+    return render_template('signup.html', form=form, email='')
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -223,11 +219,7 @@ def login():
         return redirect(url_for('profile'))
 
     if form.validate_on_submit():
-        vendors_with_email = Vendor.objects(email=form.email.data)
-        if len(vendors_with_email) > 1:
-            print "Error : Multiple vendors in database with same email"
-
-        vendor = vendors_with_email.first()
+        vid, vendor = get_vendor_from_db(form.email.data)
 
         # First check that a vendor with this email address exists in database
         if vendor is None:
@@ -256,30 +248,27 @@ def profile():
         return redirect(url_for('login'))
 
     # Find the vendor in database with matching email address
-    vendors_with_email = Vendor.objects(email=session['email'])
-    if len(vendors_with_email) > 1:
-        print "Error : Multiple vendors in database with same email"
+    vid, vendor = get_vendor_from_db(session['email'])
 
-    vendor = vendors_with_email.first()
     prod_count = str(len(vendor.product_catalog))
     vendor_deal_count = str(len(vendor.deal_list))
 
     if form.validate_on_submit():
         flash('Profile Edited')
         print "Successfully validated profile edit form!!"
-        coords = get_coordinates(form.address.data+" "+form.city.data)
-        vendor.name=form.name.data
-        vendor.description=form.description.data
-        vendor.email=form.email.data
-        vendor.category=form.category.data
-        vendor.address=form.address.data
-        vendor.phone=form.phone.data
-        vendor.state=form.state.data
-        vendor.city=form.city.data
-        vendor.latitude=repr(coords[0])
-        vendor.longitude=repr(coords[1])
-        print "New city",form.city.data
-        vendor.save()
+        coords = get_coordinates(form.address.data + " " + form.city.data)
+        vendor.name = form.name.data
+        vendor.description = form.description.data
+        vendor.email = form.email.data
+        vendor.category = form.category.data
+        vendor.address = form.address.data
+        vendor.phone = form.phone.data
+        vendor.state = form.state.data
+        vendor.city = form.city.data
+        vendor.latitude = repr(coords[0])
+        vendor.longitude = repr(coords[1])
+        print "New city", form.city.data
+        put_vendor_to_db(vendor)
         print "Finished updating profile"
     else:
         form.name.data = vendor.name
@@ -293,31 +282,34 @@ def profile():
         form.city.data = vendor.city
         form.state.data = vendor.state
 
-
     if vendor is None:
         return redirect(url_for('login'))
     else:
-        return render_template('profile.html',email=session['email'], v=vendor, products=vendor.product_catalog, deals = vendor.deal_list, product_count=prod_count, deal_count = vendor_deal_count, form=form, loginform='')
+        return render_template('profile.html', email=session['email'], v=vendor, products=vendor.product_catalog,
+                               deals=vendor.deal_list, product_count=prod_count, deal_count=vendor_deal_count,
+                               form=form, loginform='')
 
-#Service that gets vendor type for a specific vendorid
+
+# Service that gets vendor type for a specific vendorid
 @app.route('/api/vendor/type/<vendorid>', methods=['GET'])
 def getvendortype(vendorid):
     if bson.ObjectId.is_valid(vendorid):
-        vendors = Vendor.objects(id=vendorid)
-        if len(vendors)>=1:
-            resp = jsonify({'vendor_type':vendors.first().category})
+        vendors = get_vendor_from_db_by_id(vendorid)
+        if len(vendors) >= 1:
+            resp = jsonify({'vendor_type': vendors.first().category})
             resp.status_code = 200
             return resp
     else:
-        message={
-            'status':404,
-            'message': 'Not found, vendor with id:'+vendorid
+        message = {
+            'status': 404,
+            'message': 'Not found, vendor with id:' + vendorid
         }
         resp = jsonify(message)
         resp.status_code = 404
         return resp
 
-#Service that gets all vendor types
+
+# Service that gets all vendor types
 @app.route('/api/vendor/types', methods=['GET'])
 def getallvendortypes():
     result = []
@@ -328,20 +320,21 @@ def getallvendortypes():
 
     for type in result[0]:
         print type
-        types={}
-        types['type']=type[1]
+        types = {}
+        types['type'] = type[1]
         types_returned.append(types)
 
-    resp = jsonify({'vendor_types':types_returned})
+    resp = jsonify({'vendor_types': types_returned})
     resp.status_code = 200
     return resp
 
-#Service that returns a product catalog for a specific vendorid
+
+# Service that returns a product catalog for a specific vendorid
 @app.route('/api/vendor/catalog/<vendorid>', methods=['GET'])
 def getvendorcatalog(vendorid):
     if bson.ObjectId.is_valid(vendorid):
-        vendors = Vendor.objects(id=vendorid)
-        if len(vendors)>=1:
+        vendors = get_vendor_from_db_by_id(vendorid)
+        if len(vendors) >= 1:
             print "found matching vendors"
             products = []
             for product in vendors.first().product_catalog:
@@ -357,7 +350,7 @@ def getvendorcatalog(vendorid):
         else:
             message = {
                 'status': 404,
-                'message': 'Not found, vendor with id:'+vendorid
+                'message': 'Not found, vendor with id:' + vendorid
             }
             resp = jsonify(message)
             resp.status_code = 404
@@ -365,11 +358,12 @@ def getvendorcatalog(vendorid):
     else:
         message = {
             'status': 404,
-            'message': 'Not found, vendor with id:'+vendorid
+            'message': 'Not found, vendor with id:' + vendorid
         }
         resp = jsonify(message)
         resp.status_code = 404
         return resp
+
 
 @app.route('/logout')
 def signout():

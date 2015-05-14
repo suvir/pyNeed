@@ -1,4 +1,5 @@
 import requests
+# from flask import jsonify
 import json
 from models import Vendor, Deal, Product
 
@@ -26,6 +27,31 @@ def __parse_vendor(vendor, products, deals):
     return v
 
 
+def get_vendor_from_db_by_id(vendor_id):
+    """
+    A function to make GET requests for vendor, product, deals and wrap them into a single vendor object
+    :param email: email address of the vendor GET
+    :return: A vendor model object
+    """
+    vendor = get_vendor_by_id(vendor_id)
+
+    if vendor is None or vendor_id is None:
+        return None
+
+    # Get all products with matching vendorId
+    param = {"vendorId": vendor_id}
+    r = requests.get(product_url, params=param)
+    products = r.json()
+
+    # Get all deals with matching vendorId
+    param = {"vendorId": vendor_id}
+    r = requests.get(deal_url, params=param)
+    deals = r.json()
+
+    ret_vendor = __parse_vendor(vendor, products, deals)
+    return vendor_id, ret_vendor
+
+
 def get_vendor_from_db(email):
     """
     A function to make GET requests for vendor, product, deals and wrap them into a single vendor object
@@ -33,6 +59,9 @@ def get_vendor_from_db(email):
     :return: A vendor model object
     """
     vendor_id, vendor = get_single_vendor(email)
+
+    if vendor is None or vendor_id is None:
+        return None
 
     # Get all products with matching vendorId
     param = {"vendorId": vendor_id}
@@ -67,22 +96,18 @@ def post_vendor_to_db(vendor_model):
 
     vid = r.json()[id_field]
 
-    products = [product_to_json(prod, vid) for prod in vendor_model.product_catalog]
-    deals = [deals_to_json(deal, vid, vendor_model.name) for deal in vendor_model.deal_list]
-
     # Post products to database
-    for prod in products:
-        print json.dumps(prod, indent=4, separators=(',', ': '))
-        r = requests.post(product_url, data=prod)
-        print r
+    for prod in vendor_model.product_catalog:
+        post_single_product(vid, prod)
     print "Finished posting products to database"
 
     # Post deals to database
-    for deal in deals:
-        print json.dumps(deal, indent=4, separators=(',', ': '))
-        r = requests.post(deal_url, data=deal)
+    for deal in vendor_model.deal_list:
+        deal_json = deals_to_json(deal, vid, vendor_model.name)
+        r = requests.post(deal_url, data=deal_json)
         print r
     print "Finished posting deals to database"
+
     return 0
 
 
@@ -102,17 +127,6 @@ def put_vendor_to_db(vendor_model):
     json_vendor = vendor_to_json(vendor_model)
     r = requests.put(vendor_url + '/' + vid, data=json_vendor)
 
-    # PUT products in database
-    for prod in vendor_model.product_catalog:
-        pid, product = get_single_product(vid, prod.name)
-        json_product = product_to_json(prod, vid)
-        r = requests.put(product_url + '/' + pid, data=json_product)
-
-    # PUT deals in database
-    for d in vendor_model.deal_list:
-        deal_id, deal = get_single_deal(vid, d.name)
-        json_deal = deals_to_json(d, vid, vendor_model.name)
-        r = requests.put(deal_url + '/' + deal_id, data=json_deal)
     return 0
 
 
@@ -130,7 +144,7 @@ def vendor_to_json(v):
     vendor['password'] = v.pwdhash
     vendor['notiPref'] = 'email'
     # json_object = json.dumps(vendor,indent=4, separators=(',', ': '))
-    #print json_object
+    # print json_object
     return vendor
 
 
@@ -154,11 +168,23 @@ def deals_to_json(deal, vendorName, vendorId):
     deal_json['price'] = deal.price
     deal_json['discount'] = deal.discount
     deal_json['expireDate'] = deal.expiry_date
-    deal_json['couponCode'] = deal.coupon_code
+    deal_json['couponCode'] = deal.description
     deal_json['redeemCount'] = 10
     deal_json['sendCount'] = 10
     deal_json['itemSell'] = ["555080d16f2b4e2b0097580b", "5550fd3d6f2b4e2b0097580d"]
     return deal_json
+
+
+def get_vendor_by_id(vendorId):
+    params = {'vendorId': vendorId}
+    r = requests.get(vendor_url, params=params)
+    vendors = r.json()
+    if len(vendors) == 0 or vendors is None:
+        print "No vendor with email found"
+        return None, None
+
+    vendor = vendors[0]
+    return vendor
 
 
 def get_single_vendor(email):
@@ -167,11 +193,24 @@ def get_single_vendor(email):
     vendors = r.json()
     if len(vendors) == 0 or vendors is None:
         print "No vendor with email found"
-        return
+        return None, None
 
     vendor = vendors[0]
     vid = vendor[id_field]
     return vid, vendor
+
+
+def get_single_deal(vendorId, dealName):
+    params = {"vendorId": vendorId, "dealName": dealName}
+    r = requests.get(deal_url, params=params)
+    deals = r.json()
+
+    if len(deals) == 0 or deals is None:
+        print "No deals with vendorId found"
+
+    deal = deals[0]
+    deal_id = deal[id_field]
+    return deal_id, deal
 
 
 def get_single_product(vendorId, productName):
@@ -190,17 +229,44 @@ def get_single_product(vendorId, productName):
     return pid, product
 
 
-def get_single_deal(vendorId, dealName):
-    params = {"vendorId": vendorId, "dealName": dealName}
+def post_single_product(vendorId, prod):
+    product = product_to_json(prod, vendorId)
+    print "Posting single product:", product
+    r = requests.post(product_url, data=product)
+    print "Posting single product", r
+
+
+def post_single_deal(vendorId, deal, vendorName):
+    deal_json = deals_to_json(deal, vendorId, vendorName)
+    for k,v in deal_json.items():
+        print k, type(v),v
+    r = requests.post(deal_url, data=deal_json)
+    print "Posting single deal", r
+
+
+def delete_single_product(vendorId, product):
+    print vendorId, product.name
+    params = {"vendorId": vendorId, "prodName": product.name}
+    r = requests.get(product_url, params=params)
+    try:
+        products = r.json()
+        product_id = products[0][id_field]
+        r = requests.delete(product_url + '/' + product_id)
+        print r
+    except:
+        print "No such products found in database"
+
+
+def delete_single_deal(vendorId, deal, vendorName):
+    params = {"vendorId": vendorId, "dealName": deal.name}
     r = requests.get(deal_url, params=params)
-    deals = r.json()
-
-    if len(deals) == 0 or deals is None:
-        print "No deals with vendorId found"
-
-    deal = deals[0]
-    deal_id = deal[id_field]
-    return deal_id, deal
+    try:
+        deals = r.json()
+        deal_id = deals[0][id_field]
+        r = requests.delete(deal_url + '/' + deal_id)
+        print "Deleting single deal", r
+    except:
+        print "No such deals found in database"
 
 
 def get_product_from_id(prod_ids):
