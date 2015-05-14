@@ -59,14 +59,6 @@ class MyTest(TestCase):
         print response
         self.assert200(response)
 
-    def test_index_with_email_in_session_valid_email_request_post(self):
-        with self.client as c:
-            with c.session_transaction() as sess:
-                sess['logged'] = True
-                sess['email'] = 'duplicate@duplicate.com'
-            response = c.get('/index')
-        print response
-        self.assert200(response)
 
     def test_api_vendor_types(self):
         response = self.client.get("/api/vendor/types")
