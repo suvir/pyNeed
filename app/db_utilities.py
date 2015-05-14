@@ -1,4 +1,6 @@
 import requests
+# from flask import jsonify
+import json
 from models import Vendor, Deal, Product
 
 vendor_url = 'https://ineed-db.mybluemix.net/api/vendors'
@@ -6,160 +8,275 @@ deal_url = 'https://ineed-db.mybluemix.net/api/deals'
 product_url = 'https://ineed-db.mybluemix.net/api/items'
 id_field = '_id'
 
-def parse_vendor(vendor, products, deals):
-	#city = vendor['city']
-	city = 'San Diego'
-	#state = vendor['state']
-	state = 'CA'
-	#description = vendor['description']
-	description ='dummy description'
-	pw = vendor['pwdhash']
-	v = Vendor(name=vendor['name'],description=description, email = vendor['email'],\
-		category=vendor['type'],address=vendor['address'],latitude=vendor['coordinates'][0],\
-		longitude=vendor['coordinates'][1],phone=vendor['phoneNumber'], state=state,city=city,\
-		pwdhash=pw)
 
-	for prod in products:
-		p = Product(name=prod['productName'],description=prod['description'], price=prod['price'])
-		v.product_catalog.append(p)
+def __parse_vendor(vendor, products, deals):
+    v = Vendor(name=vendor['name'], description=vendor['description'], email=vendor['email'], category=vendor['type'],
+               address=vendor['address'], latitude=vendor['coordinates'][0], longitude=vendor['coordinates'][1],
+               phone=vendor['phoneNumber'], state=vendor['state'], city=vendor['city'], pwdhash=vendor['password'])
 
-	for deal in deals:
-		d = Deal(name=deal['dealName'],product_name=deal['productName'],description=prod['description'],\
-			price=deal['price'],discount=deal['discount'],category=deal['type'],expiry_date=deal['expireDate'])
-		v.deal_list.append(d)
+    for prod in products:
+        p = Product(name=prod['prodName'], description=prod['prodDesc'], price=prod['price'])
+        v.product_catalog.append(p)
 
-	return v
+    for deal in deals:
+        d = Deal(name=deal['dealName'], product_name=get_product_from_id(deal['itemSell']),
+                 coupon_code=deal['couponCode'], price=deal['price'], discount=deal['discount'], category=deal['type'],
+                 expiry_date=deal['expireDate'])
+        v.deal_list.append(d)
 
-def get_vendor(email):
-	vid,vendor = get_single_vendor(email)
+    return v
 
-	#Get all products with matching vendorId
-	param = {"vendorId":vid}
-	r = requests.get(product_url, params = param)
-	products = r.json()
 
-	#Get all deals with matching vendorId
-	param = {"vendorId":vid}
-	r = requests.get(deal_url, params = param)
-	deals = r.json()
+def get_vendor_from_db_by_id(vendor_id):
+    """
+    A function to make GET requests for vendor, product, deals and wrap them into a single vendor object
+    :param email: email address of the vendor GET
+    :return: A vendor model object
+    """
+    vendor = get_vendor_by_id(vendor_id)
 
-	ret_vendor = parse_vendor(vendor,products,deals)
-	return ret_vendor
+    if vendor is None or vendor_id is None:
+        return None
 
-def post_vendor(v):
-	vendor = vendor_to_json(v)
+    # Get all products with matching vendorId
+    param = {"vendorId": vendor_id}
+    r = requests.get(product_url, params=param)
+    products = r.json()
 
-	#Post vendor to database and get the id_field in response
-	r=requests.post(vendor_url,data=vendor)
-	if id_field not in r.json():
-		print "Missind id field in response"
-		return
+    # Get all deals with matching vendorId
+    param = {"vendorId": vendor_id}
+    r = requests.get(deal_url, params=param)
+    deals = r.json()
 
-	vid = r.json()[id_field]
+    ret_vendor = __parse_vendor(vendor, products, deals)
+    return vendor_id, ret_vendor
 
-	products = [product_to_json(prod,vid) for prod in v.product_catalog]
-	deals = [deals_to_json(deal,vid,v.name) for deal in v.deal_list]
 
-	#Post products to database
-	r=requests.post(product_url,data=products)
-	print "Finished posting products to database"
+def get_vendor_from_db(email):
+    """
+    A function to make GET requests for vendor, product, deals and wrap them into a single vendor object
+    :param email: email address of the vendor GET
+    :return: A vendor model object
+    """
+    vendor_id, vendor = get_single_vendor(email)
 
-	#Post deals to database
-	r=requests.post(deal_url,data=deals)
-	print "Finished posting deals to database"
+    if vendor is None or vendor_id is None:
+        return None
 
-	return 0
+    # Get all products with matching vendorId
+    param = {"vendorId": vendor_id}
+    r = requests.get(product_url, params=param)
+    products = r.json()
 
-def put_vendor(v):
-	vendor = vendor_to_json(v)
+    # Get all deals with matching vendorId
+    param = {"vendorId": vendor_id}
+    r = requests.get(deal_url, params=param)
+    deals = r.json()
 
-	#Post vendor to database and get the id_field in response
-	vid,ignore = get_single_vendor(vendor['email'])
-	
-	#PUT vendor to database
-	json_vendor = vendor_to_json(v)
-	r=requests.put(vendor_url+'/'+vid,data=json_vendor)
+    ret_vendor = __parse_vendor(vendor, products, deals)
+    return vendor_id, ret_vendor
 
-	#PUT products in database	
-	for prod in v.product_catalog:
-		pid,product = get_single_product(vid,prod.name)
-		json_product = product_to_json(product)
-		r = requests.put(product_url+'/'+pid, data=json_product)
 
-	#PUT deals in database
-	for d in v.deal_list:
-		deal_id,deal = get_single_deal(vid,d.name)
-		json_deal = deals_to_json(deal)
-		r = requests.put(deal_url+'/'+deal_id,data=json_deal)
-		
-	return 0
+def post_vendor_to_db(vendor_model):
+    """
+    A function to POST a vendor object to central database.
+    It takes care of splitting the model object into vendor, product and deals json objects.
+    :param vendor_model: A model vendor object
+    :return: Nothing
+    """
+    vendor = vendor_to_json(vendor_model)
+
+    # Post vendor to database and get the id_field in response
+    print type(vendor)
+    r = requests.post(vendor_url, data=vendor)
+    print r
+    if id_field not in r.json():
+        print "Missing id field in response"
+        return
+
+    vid = r.json()[id_field]
+
+    # Post products to database
+    for prod in vendor_model.product_catalog:
+        post_single_product(vid, prod)
+    print "Finished posting products to database"
+
+    # Post deals to database
+    for deal in vendor_model.deal_list:
+        deal_json = deals_to_json(deal, vid, vendor_model.name)
+        r = requests.post(deal_url, data=deal_json)
+        print r
+    print "Finished posting deals to database"
+
+    return 0
+
+
+def put_vendor_to_db(vendor_model):
+    """
+    A function to PUT a vendor object to central database.
+    It takes care of splitting the model object into vendor, product and deals json objects.
+    :param vendor_model: A model vendor object
+    :return: Nothing
+    """
+    vendor = vendor_to_json(vendor_model)
+
+    # Post vendor to database and get the id_field in response
+    vid, ignore = get_single_vendor(vendor['email'])
+
+    # PUT vendor to database
+    json_vendor = vendor_to_json(vendor_model)
+    r = requests.put(vendor_url + '/' + vid, data=json_vendor)
+
+    return 0
+
 
 def vendor_to_json(v):
-	vendor={}
-	vendor['name']=v.name
-	vendor['description']=v.description
-	vendor['email']=v.email
-	vendor['type']=v.category
-	vendor['address']=v.address
-	vendor['coordinates']=[v.latitude,v.longitude]
-	vendor['phoneNumber']=v.phone
-	vendor['state']=v.state
-	vendor['city']=v.city
-	vendor['pwdhash']=v.pwdhash
-	return vendor
+    vendor = {}
+    vendor['name'] = v.name
+    vendor['description'] = v.description
+    vendor['email'] = v.email
+    vendor['type'] = v.category
+    vendor['address'] = v.address
+    vendor['coordinates'] = [v.latitude, v.longitude]
+    vendor['phoneNumber'] = v.phone
+    vendor['state'] = v.state
+    vendor['city'] = v.city
+    vendor['password'] = v.pwdhash
+    vendor['notiPref'] = 'email'
+    # json_object = json.dumps(vendor,indent=4, separators=(',', ': '))
+    # print json_object
+    return vendor
 
-def product_to_json(prod,vendorId):
-	p = {}
-	p['name']=prod.name
-	p['description']=prod.description
-	p['price']=prod.price
-	p['vendorId']=vendorId
-	return product
 
-def deals_to_json(deal,vendorName,vendorId):
-	d = {}
-	d['dealName']=deal.name
-	d['vendorName']=vendorName
-	d['vendorId']=vendorId
-	d['type']=deal.category
-	d['price']=deal.price
-	d['discount']=deal.discount
-	d['expireDate']=deal.expiry_date
-	return d
+def product_to_json(prod, vendorId):
+    prod_json = {}
+    prod_json['prodName'] = prod.name
+    prod_json['prodDesc'] = prod.description
+    prod_json['price'] = prod.price
+    prod_json['quantity'] = 1
+    prod_json['category'] = "perishable"
+    prod_json['vendorId'] = vendorId
+    return prod_json
+
+
+def deals_to_json(deal, vendorName, vendorId):
+    deal_json = {}
+    deal_json['dealName'] = deal.name
+    deal_json['vendorName'] = vendorId
+    deal_json['vendorId'] = vendorName
+    deal_json['type'] = deal.category
+    deal_json['price'] = deal.price
+    deal_json['discount'] = deal.discount
+    deal_json['expireDate'] = deal.expiry_date
+    deal_json['couponCode'] = deal.description
+    deal_json['redeemCount'] = 10
+    deal_json['sendCount'] = 10
+    deal_json['itemSell'] = ["555080d16f2b4e2b0097580b", "5550fd3d6f2b4e2b0097580d"]
+    return deal_json
+
+
+def get_vendor_by_id(vendorId):
+    params = {'vendorId': vendorId}
+    r = requests.get(vendor_url, params=params)
+    vendors = r.json()
+    if len(vendors) == 0 or vendors is None:
+        print "No vendor with email found"
+        return None, None
+
+    vendor = vendors[0]
+    return vendor
+
 
 def get_single_vendor(email):
-	param = {"email":email}
-	r = requests.get(vendor_url,params=param)
-	vendors = r.json()
-	
-	if len(vendors) == 0 or vendors is None:
-		print "No vendor with email found"
-		return
+    params = {"email": email}
+    r = requests.get(vendor_url, params=params)
+    vendors = r.json()
+    if len(vendors) == 0 or vendors is None:
+        print "No vendor with email found"
+        return None, None
 
-	vendor = vendors[0]
-	vid = vendor[id_field]
-	return vid,vendor
+    vendor = vendors[0]
+    vid = vendor[id_field]
+    return vid, vendor
 
-def get_single_product(vendorId,productName):
-	params = {"vendorId":vendorId,"productName":productName}
-	r = requests.get(product_url,params=params)
-	products = r.json()
 
-	if len(products) == 0 or products is None:
-		print "No products with name and vendorId found"
+def get_single_deal(vendorId, dealName):
+    params = {"vendorId": vendorId, "dealName": dealName}
+    r = requests.get(deal_url, params=params)
+    deals = r.json()
 
-	product = products[0]
-	pid = product[id_field]
-	return pid,product
+    if len(deals) == 0 or deals is None:
+        print "No deals with vendorId found"
 
-def get_single_deal(vendorId,dealName):
-	params = {"vendorId":vendorId,"dealName":dealName}
-	r = requests.get(deal_url,params=params)
-	deals = r.json()
+    deal = deals[0]
+    deal_id = deal[id_field]
+    return deal_id, deal
 
-	if len(deals) == 0 or deals is None:
-		print "No deals with vendorId found"
 
-	deal = deals[0]
-	deal_id = deal[id_field]
-	return deal_id,deal
+def get_single_product(vendorId, productName):
+    print vendorId, productName
+    params = {"vendorId": vendorId, "prodName": productName}
+    r = requests.get(product_url, params=params)
+    print r
+    products = r.json()
+
+    if len(products) == 0 or products is None:
+        print "No products with name and vendorId found"
+
+    print products
+    product = products[0]
+    pid = product[id_field]
+    return pid, product
+
+
+def post_single_product(vendorId, prod):
+    product = product_to_json(prod, vendorId)
+    print "Posting single product:", product
+    r = requests.post(product_url, data=product)
+    print "Posting single product", r
+
+
+def post_single_deal(vendorId, deal, vendorName):
+    deal_json = deals_to_json(deal, vendorId, vendorName)
+    for k,v in deal_json.items():
+        print k, type(v),v
+    r = requests.post(deal_url, data=deal_json)
+    print "Posting single deal", r
+
+
+def delete_single_product(vendorId, product):
+    print vendorId, product.name
+    params = {"vendorId": vendorId, "prodName": product.name}
+    r = requests.get(product_url, params=params)
+    try:
+        products = r.json()
+        product_id = products[0][id_field]
+        r = requests.delete(product_url + '/' + product_id)
+        print r
+    except:
+        print "No such products found in database"
+
+
+def delete_single_deal(vendorId, deal, vendorName):
+    params = {"vendorId": vendorId, "dealName": deal.name}
+    r = requests.get(deal_url, params=params)
+    try:
+        deals = r.json()
+        deal_id = deals[0][id_field]
+        r = requests.delete(deal_url + '/' + deal_id)
+        print "Deleting single deal", r
+    except:
+        print "No such deals found in database"
+
+
+def get_product_from_id(prod_ids):
+    if len(prod_ids) == 0 or prod_ids is None:
+        return ''
+
+    r = requests.get(product_url + '/' + prod_ids[0])
+    try:
+        prod = r.json()
+    except ValueError:
+        print "Encountered error. No product found."
+        return ''
+    return prod['prodName']
