@@ -2,6 +2,7 @@ from werkzeug import generate_password_hash, check_password_hash
 from app import db
 
 class Product(db.Document):
+    id = db.StringField(max_length=255, required=True)
     name = db.StringField(max_length=255, required=True)
     description = db.StringField(max_length=255, required=True)
     price = db.FloatField(min_value=0.0, required=True)

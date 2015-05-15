@@ -295,8 +295,9 @@ def profile():
 def getvendortype(vendorid):
     if bson.ObjectId.is_valid(vendorid):
         vendors = get_vendor_from_db_by_id(vendorid)
+        print vendors
         if len(vendors) >= 1:
-            resp = jsonify({'vendor_type': vendors.first().category})
+            resp = jsonify({'vendor_type': vendors[1].category})
             resp.status_code = 200
             return resp
     else:
@@ -337,9 +338,9 @@ def getvendorcatalog(vendorid):
         if len(vendors) >= 1:
             print "found matching vendors"
             products = []
-            for product in vendors.product_catalog:
+            for product in vendors[1].product_catalog:
                 p = {}
-                p['_id'] = product.id
+                p['id'] = str(product.id)
                 p['name'] = product.name
                 p['description'] = product.description
                 p['price'] = product.price

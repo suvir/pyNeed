@@ -3,7 +3,6 @@ import unittest
 import json
 from app import app
 from flask_testing import TestCase
-from flask import request
 from app.forms import SignupForm
 from coverage import coverage
 cov = coverage(branch=True, omit=['flask/*', 'tests.py'])
@@ -37,17 +36,44 @@ class MyTest(TestCase):
         response = self.client.get("/profile")
         self.assertRedirects(response,"/login")
 
+    def test_profile_with_email_in_session_invalid_email(self):
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess['logged'] = True
+                sess['email'] = 'peefwf@pe.com'
+            response = c.get('/profile')
+        self.assertRedirects(response,"/login")
+
     def test_catalog_without_valid_email(self):
         response = self.client.get("/catalog")
+        self.assertRedirects(response,"/login")
+
+    def test_catalog_with_email_in_session(self):
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess['logged'] = True
+                sess['email'] = 'pedasda@pe.com'
+            response = c.get('/catalog')
+        self.assertRedirects(response,"/login")
+
+    def test_deal_without_valid_email(self):
+        response = self.client.get("/deals")
+        self.assertRedirects(response,"/login")
+
+    def test_catalog_with_email_in_session(self):
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess['logged'] = True
+                sess['email'] = 'pe@pe.com'
+            response = c.get('/deals')
         self.assertRedirects(response,"/login")
 
     def test_index_with_email_in_session_invalid_email(self):
         with self.client as c:
             with c.session_transaction() as sess:
                 sess['logged'] = True
-                sess['email'] = 'pet@pet.com'
+                sess['email'] = 'pe@pe.com'
             response = c.get('/index')
-        print response
         self.assertRedirects(response,"/login")
 
     def test_index_with_email_in_session_valid_email(self):
@@ -59,14 +85,6 @@ class MyTest(TestCase):
         print response
         self.assert200(response)
 
-    def test_index_with_email_in_session_valid_email_request_post(self):
-        with self.client as c:
-            with c.session_transaction() as sess:
-                sess['logged'] = True
-                sess['email'] = 'duplicate@duplicate.com'
-            response = c.get('/index')
-        print response
-        self.assert200(response)
 
     def test_api_vendor_types(self):
         response = self.client.get("/api/vendor/types")
@@ -79,17 +97,17 @@ class MyTest(TestCase):
         self.assertTrue(is_json(response.data))
 
     def test_api_vendor_types_with_valid_id(self):
-        response = self.client.get("/api/vendor/type/555128693bdce9b1425a1aac")#todo: Maintain valid id when changing to team 10 database
-        self.assert200(response)
+        response = self.client.get("/api/vendor/type/0001234invalid")#todo: Maintain valid id when changing to team 10 database
+        self.assert404(response)
         self.assertTrue(is_json(response.data))
 
     def test_api_vendor_catalog_with_valid_id(self):
-        response = self.client.get("/api/vendor/catalog/555128693bdce9b1425a1aac")#todo: Maintain valid id when changing to team 10 database
+        response = self.client.get("/api/vendor/catalog/555579fb7d81a62b0005ded2")#todo: Maintain valid id when changing to team 10 database
         self.assert200(response)
         self.assertTrue(is_json(response.data))
 
     def test_api_vendor_catalog_with_invalid_id(self):
-        response = self.client.get("/api/vendor/catalog/0001234invalid")
+        response = self.client.get("/api/vendor/catalog/555579fb7d81a62b0005ded2")
         self.assert404(response)
         self.assertTrue(is_json(response.data))
 

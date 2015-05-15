@@ -15,7 +15,7 @@ def __parse_vendor(vendor, products, deals):
                phone=vendor['phoneNumber'], state=vendor['state'], city=vendor['city'], pwdhash=vendor['password'])
 
     for prod in products:
-        p = Product(name=prod['prodName'], description=prod['prodDesc'], price=prod['price'])
+        p = Product(id=prod['_id'], name=prod['prodName'], description=prod['prodDesc'], price=prod['price'])
         v.product_catalog.append(p)
 
     for deal in deals:
@@ -47,7 +47,9 @@ def get_vendor_from_db_by_id(vendor_id):
     param = {"vendorId": vendor_id}
     r = requests.get(deal_url, params=param)
     deals = r.json()
-
+    print vendor
+    print products
+    print deals
     ret_vendor = __parse_vendor(vendor, products, deals)
     return vendor_id, ret_vendor
 
@@ -178,6 +180,7 @@ def deals_to_json(deal, vendorName, vendorId):
 def get_vendor_by_id(vendorId):
     params = {'_id': vendorId}
     r = requests.get(vendor_url, params=params)
+    print r.json()
     vendors = r.json()
     if len(vendors) == 0 or vendors is None:
         print "No vendor with email found"
