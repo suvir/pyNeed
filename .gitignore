@@ -1,10 +1,8 @@
 *.pyc
 .idea/
-manifest.yml
 config.py
 flask/
 .DS_STORE
-Procfile
 .coverage
 coverage.txt
 tmp/
