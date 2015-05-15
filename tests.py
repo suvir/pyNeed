@@ -3,6 +3,11 @@ import unittest
 import json
 from app import app
 from flask_testing import TestCase
+from flask import request
+from app.forms import SignupForm
+from coverage import coverage
+cov = coverage(branch=True, omit=['flask/*', 'tests.py'])
+cov.start()
 
 class MyTest(TestCase):
 
@@ -36,7 +41,7 @@ class MyTest(TestCase):
         response = self.client.get("/catalog")
         self.assertRedirects(response,"/login")
 
-    def test_index_with_email_in_session(self):
+    def test_index_with_email_in_session_invalid_email(self):
         with self.client as c:
             with c.session_transaction() as sess:
                 sess['logged'] = True
@@ -44,6 +49,24 @@ class MyTest(TestCase):
             response = c.get('/index')
         print response
         self.assertRedirects(response,"/login")
+
+    def test_index_with_email_in_session_valid_email(self):
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess['logged'] = True
+                sess['email'] = 'petter@petter.com'
+            response = c.get('/index')
+        print response
+        self.assert200(response)
+
+    def test_index_with_email_in_session_valid_email_request_post(self):
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess['logged'] = True
+                sess['email'] = 'duplicate@duplicate.com'
+            response = c.get('/index')
+        print response
+        self.assert200(response)
 
     def test_api_vendor_types(self):
         response = self.client.get("/api/vendor/types")
@@ -56,12 +79,12 @@ class MyTest(TestCase):
         self.assertTrue(is_json(response.data))
 
     def test_api_vendor_types_with_valid_id(self):
-        response = self.client.get("/api/vendor/type/insertvalidid")#todo: Insert a valid id
+        response = self.client.get("/api/vendor/type/555128693bdce9b1425a1aac")#todo: Maintain valid id when changing to team 10 database
         self.assert200(response)
         self.assertTrue(is_json(response.data))
 
     def test_api_vendor_catalog_with_valid_id(self):
-        response = self.client.get("/api/vendor/catalog/insertvalidid")#todo: Insert a valid id
+        response = self.client.get("/api/vendor/catalog/555128693bdce9b1425a1aac")#todo: Maintain valid id when changing to team 10 database
         self.assert200(response)
         self.assertTrue(is_json(response.data))
 
@@ -81,4 +104,13 @@ def is_json(myjson):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    try:
+        unittest.main()
+    except:
+        pass
+    cov.stop()
+    cov.save()
+    print "\n\nCoverage Report:\n"
+    cov.report()
+    cov.html_report(directory='tmp/coverage')
+    cov.erase()
