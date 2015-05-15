@@ -337,7 +337,7 @@ def getvendorcatalog(vendorid):
         if len(vendors) >= 1:
             print "found matching vendors"
             products = []
-            for product in vendors.first().product_catalog:
+            for product in vendors.product_catalog:
                 p = {}
                 p['_id'] = product.id
                 p['name'] = product.name

@@ -176,7 +176,7 @@ def deals_to_json(deal, vendorName, vendorId):
 
 
 def get_vendor_by_id(vendorId):
-    params = {'vendorId': vendorId}
+    params = {'_id': vendorId}
     r = requests.get(vendor_url, params=params)
     vendors = r.json()
     if len(vendors) == 0 or vendors is None:
@@ -184,6 +184,8 @@ def get_vendor_by_id(vendorId):
         return None, None
 
     vendor = vendors[0]
+    print "GETS VENDOR FROM DB"
+    print vendor
     return vendor
 
 
