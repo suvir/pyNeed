@@ -188,7 +188,7 @@ def deals():
         else:
             print "Not inside any form..."
 
-    return render_template('deals.html', loginform='', email=session['email'], vendor=vendor, deals=vendor.deal_list)
+    return render_template('deals.html', loginform='', email=session['email'], vendor=vendor, deals=vendor.deal_list, products=vendor.product_catalog)
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
