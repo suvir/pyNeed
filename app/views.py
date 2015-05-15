@@ -365,6 +365,14 @@ def getvendorcatalog(vendorid):
         resp.status_code = 404
         return resp
 
+# Service that returns a list of all vendors
+@app.route('/api/vendors/', methods=['GET'])
+def get_all_vendors():
+    vendors = get_vendors_from_db()
+    resp = jsonify({'vendors':vendors})
+    resp.status_code = 200
+    return resp
+
 
 @app.route('/logout')
 def signout():

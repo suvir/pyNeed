@@ -78,6 +78,19 @@ def get_vendor_from_db(email):
     ret_vendor = __parse_vendor(vendor, products, deals)
     return vendor_id, ret_vendor
 
+def get_vendors_from_db():
+    """
+    A function to make GET requests for vendor, product, deals and wrap them into a single vendor object
+    :param email: email address of the vendor GET
+    :return: A vendor model object
+    """
+    vendors = get_all_vendors()
+
+  #  if vendors is None:
+   #     return None
+
+    #ret_vendor = __parse_vendor(vendor, products, deals)
+    return vendors
 
 def post_vendor_to_db(vendor_model):
     """
@@ -190,6 +203,12 @@ def get_vendor_by_id(vendorId):
     print "GETS VENDOR FROM DB"
     print vendor
     return vendor
+
+def get_all_vendors():
+    r = requests.get(vendor_url)
+    vendors = r.json()
+    print vendors
+    return vendors
 
 
 def get_single_vendor(email):
