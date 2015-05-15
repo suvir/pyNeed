@@ -84,6 +84,7 @@
 
 <!-- Navigation -->
     <a id="menu-toggle" href="#" class="btn btn-dark btn-lg toggle"><i class="fa fa-bars"></i></a>
+    <a class="btn btn-dark btn-lg toggle login-btn">  <i class="fa fa-sign-in">Login</i></a>
     <nav id="sidebar-wrapper">
         <ul class="sidebar-nav">
             <a id="menu-close" href="#" class="btn btn-light btn-lg pull-right toggle"><i class="fa fa-times"></i></a>
@@ -99,7 +100,7 @@
             </li>
 
              {%if email != ''%}
-                    <!-- User is logged in -->
+             <!-- User is logged in -->
                 <li>
                     <a href="index" onclick = $("#menu-close").click();>Home</a>
                 </li>
@@ -140,18 +141,28 @@
 
 <div class="semi-nav-container">
     <!-- Testing new design -->
+    <div class="semi-nav">
+        <div class="col-xs-10 col-s-10 col-md-10">
+            <a href="index#top"><i class="fa fa-info-circle">INEED</i> </a>
+        </div>
+        <div class="col-xs-1 col-s-1 col-md-1">
+
+        </div>
+    </div>
+<!--
     <nav class="navbar navbar-default semi-nav">
         <div class="container-fluid">
             <div class="navbar-header">
                  <a class="navbar-brand" href="index#top">
                      <span class="glyphicon glyphicon-cloud"> iNeed</span>
                  </a>
+               <a class="btn btn-dark btn-lg toggle login-btn">  <i class="fa fa-sign-in"></i></a>
             </div>
         </div>
-    </nav>
+    </nav>-->
 
   <!-- Header -->
-    <header id="top" class="header">
+    <header id="top" class="header blur">
         <div class="text-vertical-center">
             <h1>iNeed Vendors</h1>
             <h3>Distribute deals and reach out to customers in a whole new way </h3>
@@ -159,7 +170,7 @@
 
         </div>
     </header>
-    <div class="bottom-header text-vertical-center">
+    <div class="bottom-header text-vertical-center form-group">
         {% if email=='' %}
             <div class="col-xs-12 col-s-12 col-m-12">
                 <br>
@@ -169,12 +180,12 @@
         {% else %}
             <div class="col-xs-6 col-s-6 col-md-6">
                 <p class="lead">Your products available through iNeed : {{product_count}}</p>
-                <a href="/catalog" class="btn btn-light" >Manage Products</a>
+                <a href="/catalog" class="btn btn-dark" >Manage Products</a>
             </div>
 
             <div class="col-xs-6 col-s-6 col-md-6">
                 <p class="lead">Your deals available through iNeed : {{deal_count}}</p>
-                <a href="/deals" class="btn btn-light" >Manage Deals</a>
+                <a href="/deals" class="btn btn-dark" >Manage Deals</a>
             </div>
         {% endif %}
     </div>

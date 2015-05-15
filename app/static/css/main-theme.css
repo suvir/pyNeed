@@ -297,12 +297,10 @@ footer {
     height: 5%;
     z-index: 2;
     border: none;
-    background: rgba(0,0,0,0.5);
+    background: rgba(210,201,188,0);
     box-shadow: none;
-    border-bottom: #2b542c solid thin;
-    border-bottom-left-radius: 0%;
-    border-bottom-right-radius: 0%;
-    color: #ffffff;
+    border-radius: 0%;
+
 }
 
 .semi-nav-container{
@@ -310,20 +308,46 @@ footer {
 }
 
 .bottom-header{
-    margin-top: -95px;
+    margin-top: -100px;
     position: absolute;
     width:100%;
-    height: 10%;
-    background: rgba(0,0,0,0.5);
-    border-top: #2b542c solid thin;
+    height: 100px;
+    background: rgba(210,201,188,0.5);
     z-index: 4;
-    color: #ffffff;
+
 }
 
 .navbar-brand span{
     color: #f7f7f7;
 }
 
+.blur{
+    -webkit-transition: all 1s ease ;
+    -moz-transition: all 1s ease;
+    -o-transition: all 1s ease;
+    transition:all 1s ease ;
+
+
+    /*blur*/
+    -webkit-filter: blur(5px);
+}
+
 .navbar-brand span:hover{
     color: #889d60;
+}
+
+.login-btn{
+    z-index: 5;
+    position: fixed;
+    top: 0;
+    right: 50px;
+}
+
+.checked-list-box{
+    max-height: 125px;
+    overflow-y: scroll;
+}
+
+.active .checked-list-box .list-group-item {
+    background-color: #f0ad4e !important;
 }

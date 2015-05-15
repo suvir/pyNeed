@@ -21,54 +21,86 @@
 
 <section id="services" class="services bg-primary">
     <div class="container" id="product_list">
-        <div class="row text-center">
+        <div class="row text-vertical-center">
             <h3>Add a new deal</h3><hr class="small">
 
             <form method="POST" id="product_form">
-                <div class="col-xs-6 col-sm-6 col-md-6">
-                     <div class="form-group">
-                         <input type="text" class="form-control input-sm" name="add_qty" placeholder="Name: "/>
-                     </div>
+                 <div class="col xs-12 col-sm-12 col-md-8">
+
+                     <div class="col-xs-4 col-sm-4 col-md-4">
+                         <div class="form-group">
+                             <input type="text" class="form-control input-sm" name="add_qty" placeholder="Name: "/>
+                         </div>
+                    </div>
+
+                    <div class="col-xs-4 col-sm-4 col-md-4">
+                       <div class="form-group">
+                           <input type="text" class="form-control input-sm" name="add_prod_name" placeholder="Product Name: "/>
+                       </div>
+                    </div>
+                     <div class="col-xs-4 col-sm-4 col-md-4">
+                       <div class="form-group">
+                           <input type="text" class="form-control input-sm" name="add_coupon_code" placeholder="Coupon Code: "/>
+                       </div>
+                    </div>
+                    <br>
+                    <div class="form-group col-xs-3 col-sm-3 col-md-3">
+                       <select name="add_deal_type" class="form-control input-sm">
+                           <option value="dummy_deal_type">Select deal type..</option>
+                           <option value="dummy_deal_type">Deal</option>
+                           <option value="dummy_deal_type">Promotion</option>
+                       </select>
+                    </div>
+
+                    <div class="col-xs-7 col-sm-7 col-md-7">
+                        <div class="form-group">
+                            <input type="text" class="form-control input-sm" name="add_name" placeholder="Description: "/>
+                         </div>
+                    </div>
+                    <div class="col-xs-2 col-sm-2 col-md-2">
+                        <div class="form-group">
+                            <input type="text" class="form-control input-sm" name="add_quantity" placeholder="Quantity: "/>
+                         </div>
+                    </div>
+                    <div class="col-xs-4 col-sm-4 col-md-4">
+                        <input type="text" class="form-control input-sm" name="add_price" placeholder="Price: "/>
+                    </div>
+                    <div class="col-xs-4 col-sm-4 col-md-4">
+                       <div class="form-group">
+                           <input type="text" class="form-control input-sm" name="add_discount" placeholder="Discount in %: "/>
+                       </div>
+                    </div>
+                    <div class="col-xs-4 col-sm-4 col-md-4">
+                       <div class="form-group">
+                               <input type="text" class="form-control input-sm" name="add_expiry_date" placeholder="Pick an expiry date: " id="add_expiry_date"/>
+                       </div>
+                    </div>
+
                 </div>
-                <div class="col-xs-6 col-sm-6 col-md-6">
-                   <div class="form-group">
-                       <input type="text" class="form-control input-sm" name="add_prod_name" placeholder="Product Name: "/>
-                   </div>
-                </div>
-                <div class="form-group col-xs-3 col-sm-3 col-md-3">
-                   <select name="add_deal_type" class="form-control input-sm">
-                       <option value="dummy_deal_type">Select deal type..</option>
-                       <option value="dummy_deal_type">Deal</option>
-                       <option value="dummy_deal_type">Promotion</option>
-                   </select>
-                </div>
-                <div class="form-group col-xs-9 col-sm-9 col-md-9">
-                    <input type="text" class="form-control input-sm" name="add_name" placeholder="Description: "/>
-                </div>
-                <div class="col-xs-4 col-sm-4 col-md-4">
-                     <div class="form-group">
-                         <input type="text" class="form-control input-sm" name="add_price" placeholder="Price: "/>
-                     </div>
-                </div>
-                <div class="col-xs-4 col-sm-4 col-md-4">
-                   <div class="form-group">
-                       <input type="text" class="form-control input-sm" name="add_discount" placeholder="Discount: "/>
-                   </div>
-                </div>
-                <div class="col-xs-4 col-sm-4 col-md-4">
-                   <div class="form-group">
-                           <input type="text" class="form-control input-sm" name="add_expiry_date" placeholder="Pick an expiry date: " id="add_expiry_date"/>
-                   </div>
+                <div class="col-xs-12 col-sm-12 col-md-4">
+                    <ul id="check-list-box" class="list-group checked-list-box">
+                        {% for product in products %}
+                        <a class="list-group-item">
+                            {{product.name}}
+                          </a>
+                        {% endfor %}
+                    </ul>
+
+
                 </div>
                 <div class="form-group">
                     <input type="submit" class="btn btn-light" name="editremove" value="Add Deal">
-         <!--<input onclick="addRow(this.form);" type="button" value="Add row" class="btn btn-light"/>-->
+             <!--<input onclick="addRow(this.form);" type="button" value="Add row" class="btn btn-light"/>-->
                 </div>
 
-            </form>
 
+
+            </form>
+</div>
+        <div class="row text-center">
 
             <br/>
+        <br/>
             <h3>Your Deals</h3>
             <table class="table" id="product_table">
                 <tr>
@@ -77,7 +109,9 @@
                     <td><b>Product</b></td>
                     <td><b>Description</b></td>
                     <td><b>Price</b></td>
+                    <td><b>Status</b></td>
                     <td><b>Actions</b></td>
+
                 </tr>
                <form method="POST" id="delete_form">
                 {%for deal in deals%}
@@ -87,11 +121,13 @@
                         <td><input hidden="true" name="product_name" value="{{deal.product_name}}">{{deal.product_name}}</td>
                         <td><input hidden="true" name="description" value="{{deal.description}}">{{deal.description}}</td>
                         <td><input hidden="true" name="price" value="{{deal.price}}">{{deal.price}}</td>
+                        <td id="{{deal.name}}-{{ deals.index(deal)}}"></td>
                         <td>
                             <label for="{{deal.name}}_{{deal.product_name}}_{{deal.description}}_{{deal.price}}" class="btn editremove">
                                 <i class="fa fa-remove fa-lg"></i> Remove</label>
                             <input id="{{deal.name}}_{{deal.product_name}}_{{deal.description}}_{{deal.price}}" type="submit" name="editremove" value="Remove#{{deal.name}}#{{deal.product_name}}#{{deal.description}}#{{deal.price}}" class="hidden"/>
                         </td>
+
                     </tr>
                 {%endfor%}
                 </form>
@@ -134,6 +170,86 @@
 </section>
 
 <script type="text/javascript">
+
+$(function () {
+    $('.list-group.checked-list-box .list-group-item').each(function () {
+
+        // Settings
+        var $widget = $(this),
+            $checkbox = $('<input type="checkbox" class="hidden" />'),
+            color = ($widget.data('color') ? $widget.data('color') : "primary"),
+            style = ($widget.data('style') == "button" ? "btn-" : "list-group-item-"),
+            settings = {
+                on: {
+                    icon: 'glyphicon glyphicon-check'
+                },
+                off: {
+                    icon: 'glyphicon glyphicon-unchecked'
+                }
+            };
+
+        $widget.css('cursor', 'pointer')
+        $widget.append($checkbox);
+
+        // Event Handlers
+        $widget.on('click', function () {
+            $checkbox.prop('checked', !$checkbox.is(':checked'));
+            $checkbox.triggerHandler('change');
+            updateDisplay();
+        });
+        $checkbox.on('change', function () {
+            updateDisplay();
+        });
+
+
+        // Actions
+        function updateDisplay() {
+            var isChecked = $checkbox.is(':checked');
+
+            // Set the button's state
+            $widget.data('state', (isChecked) ? "on" : "off");
+
+            // Set the button's icon
+            $widget.find('.state-icon')
+                .removeClass()
+                .addClass('state-icon ' + settings[$widget.data('state')].icon);
+
+            // Update the button's color
+            if (isChecked) {
+                $widget.addClass(style + color + ' active');
+            } else {
+                $widget.removeClass(style + color + ' active');
+            }
+        }
+
+        // Initialization
+        function init() {
+
+            if ($widget.data('checked') == true) {
+                $checkbox.prop('checked', !$checkbox.is(':checked'));
+            }
+
+            updateDisplay();
+
+            // Inject the icon if applicable
+            if ($widget.find('.state-icon').length == 0) {
+                $widget.prepend('<span class="state-icon ' + settings[$widget.data('state')].icon + '"></span>');
+            }
+        }
+        init();
+    });
+
+    $('#get-checked-data').on('click', function(event) {
+        event.preventDefault();
+        var checkedItems = {}, counter = 0;
+        $("#check-list-box li.active").each(function(idx, li) {
+            checkedItems[counter] = $(li).text();
+            counter++;
+        });
+        $('#display-json').html(JSON.stringify(checkedItems, null, '\t'));
+    });
+});
+
     $(document).ready(function() {
         $('#add_expiry_date')
             .datepicker({
@@ -172,11 +288,15 @@
                 }
             }
         });
+
+
+
     });
 
     function submitEditRemoveForm(){
         $('#delete_form').submit();
     }
+
 
 
 
@@ -200,5 +320,26 @@ function addRow(frm) {
 function removeRow(rnum) {
 	jQuery('#rowNum'+rnum).remove();
 }
+
+function CompareDate(date){
+    var today = new Date();
+    var datestring = date+'';
+    var dateArray = datestring.split("-");
+    var givenDate = new Date(Number(dateArray[2]),Number(dateArray[0])-1, Number(dateArray[1]));
+    if(today>=givenDate){
+        return "Expired"
+    }
+    else{
+        return "Active"
+    }
+}
+
+
+{% for deal in deals %}
+    document.getElementById("{{deal.name}}-{{ deals.index(deal)}}").innerText = CompareDate("{{ deal.expiry_date }}") ;
+
+    //$("#{{deal.name}}-{{ deals.index(deal)}}").text("ACTIVE");
+{% endfor %}
+
 </script>
 {% endblock %}
