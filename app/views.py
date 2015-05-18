@@ -374,6 +374,18 @@ def get_all_vendors():
     return resp
 
 
+# Service that notifies Vendors when a transaction is made
+@app.route('/api/vendor/notify', methods=['GET'])
+def notifyAllVendors():
+    #vendors = get_vendors_from_db()
+    #print request.args.get('vendorId')
+    #print request.args.get('transactionId')
+    #print request.args.get('message')
+    resp = jsonify({'message':"Vendor with id: "+request.args.get('vendorId')+" successfully notified"})
+    resp.status_code = 200
+    return resp
+
+
 @app.route('/logout')
 def signout():
     if 'email' not in session:
