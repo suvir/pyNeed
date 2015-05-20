@@ -45,10 +45,17 @@ def index():
                             state=form.state.data, city=form.city.data, pwdhash=pwdhash, latitude=repr(coords[0]),
                             longitude=repr(coords[1]))
         # new_vendor.save()
-        post_vendor_to_db(new_vendor)
-        # Add email to cookie
-        session['email'] = new_vendor.email
-        return redirect(url_for('profile'))
+
+        if get_vendor_from_db(form.email.data) is None :
+            post_vendor_to_db(new_vendor)
+            # Add email to cookie
+            session['email'] = new_vendor.email
+            return redirect(url_for('profile'))
+        else:
+            form.email.errors.append("User with email: "+request.form['email']+" already exists in the database")
+            flash("Enrollment failed")
+            return render_template('index.html', form=form, email='', loginform=loginform, v='')
+
 
     elif request.method == 'POST' and request.form['submit'] == "Login" and loginform.validate_on_submit():
         vid, vendor = get_vendor_from_db(loginform.email.data)
@@ -69,8 +76,8 @@ def index():
             loginform.password.errors.append("Incorrect password")
             flash('Login failed because incorrect password')
 
-    print "Login form errors below:"
-    print(loginform.errors)
+    print "Form errors below:"
+    print(form.errors)
     return render_template('index.html', form=form, email='', loginform=loginform, v='')
 
 
@@ -295,10 +302,17 @@ def profile():
 def getvendortype(vendorid):
     if bson.ObjectId.is_valid(vendorid):
         vendors = get_vendor_from_db_by_id(vendorid)
-        print vendors
-        if len(vendors) >= 1:
+        if vendors is not None:
             resp = jsonify({'vendor_type': vendors[1].category})
             resp.status_code = 200
+            return resp
+        else:
+            message = {
+                'status': 404,
+                'message': 'Not found, vendor with id:' + vendorid
+            }
+            resp = jsonify(message)
+            resp.status_code = 404
             return resp
     else:
         message = {
@@ -335,7 +349,7 @@ def getallvendortypes():
 def getvendorcatalog(vendorid):
     if bson.ObjectId.is_valid(vendorid):
         vendors = get_vendor_from_db_by_id(vendorid)
-        if len(vendors) >= 1:
+        if vendors is not None:
             print "found matching vendors"
             products = []
             for product in vendors[1].product_catalog:
@@ -377,13 +391,21 @@ def get_all_vendors():
 # Service that notifies Vendors when a transaction is made
 @app.route('/api/vendor/notify', methods=['GET'])
 def notifyAllVendors():
-    #vendors = get_vendors_from_db()
-    #print request.args.get('vendorId')
-    #print request.args.get('transactionId')
-    #print request.args.get('message')
-    resp = jsonify({'message':"Vendor with id: "+request.args.get('vendorId')+" successfully notified"})
-    resp.status_code = 200
-    return resp
+    if bson.ObjectId.is_valid(request.args.get('vendorId')):
+        vendor = get_vendor_by_id(request.args.get('vendorId'))
+        if vendor is not None:
+            resp = jsonify({'message':"Vendor with id: "+request.args.get('vendorId')+" successfully notified"})
+            resp.status_code = 200
+            return resp
+        else:
+            resp = jsonify({'message':"Vendor id: "+request.args.get('vendorId')+" Does not exist in the database"})
+            resp.status_code = 404
+            return resp
+
+    else:
+        resp = jsonify({'message':"Vendor id: "+request.args.get('vendorId')+" is invalid"})
+        resp.status_code = 404
+        return resp
 
 
 @app.route('/logout')

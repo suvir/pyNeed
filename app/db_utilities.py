@@ -92,6 +92,7 @@ def get_vendors_from_db():
     #ret_vendor = __parse_vendor(vendor, products, deals)
     return vendors
 
+
 def post_vendor_to_db(vendor_model):
     """
     A function to POST a vendor object to central database.
@@ -197,7 +198,7 @@ def get_vendor_by_id(vendorId):
     vendors = r.json()
     if len(vendors) == 0 or vendors is None:
         print "No vendor with email found"
-        return None, None
+        return None
 
     vendor = vendors[0]
     print "GETS VENDOR FROM DB"
