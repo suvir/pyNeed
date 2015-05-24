@@ -2,9 +2,10 @@ import requests
 # from flask import jsonify
 import json
 from models import Vendor, Deal, Product
+from deals_utilities import *
 
 vendor_url = 'https://ineed-db.mybluemix.net/api/vendors'
-deal_url = 'https://ineed-db.mybluemix.net/api/deals'
+findDeal_url = 'http://ineed-dealqq.mybluemix.net/findDeal'
 product_url = 'https://ineed-db.mybluemix.net/api/items'
 id_field = '_id'
 
@@ -45,7 +46,7 @@ def get_vendor_from_db_by_id(vendor_id):
 
     # Get all deals with matching vendorId
     param = {"vendorId": vendor_id}
-    r = requests.get(deal_url, params=param)
+    r = requests.get(findDeal_url, params=param)
     deals = r.json()
     print vendor
     print products
@@ -72,7 +73,7 @@ def get_vendor_from_db(email):
 
     # Get all deals with matching vendorId
     param = {"vendorId": vendor_id}
-    r = requests.get(deal_url, params=param)
+    r = requests.get(findDeal_url, params=param)
     deals = r.json()
 
     ret_vendor = __parse_vendor(vendor, products, deals)
@@ -119,8 +120,9 @@ def post_vendor_to_db(vendor_model):
 
     # Post deals to database
     for deal in vendor_model.deal_list:
-        deal_json = deals_to_json(deal, vid, vendor_model.name)
-        r = requests.post(deal_url, data=deal_json)
+        r = post_single_deal(vid, deal, vendor_model.name)
+#        deal_json = deals_to_json(deal, vid, vendor_model.name)
+#        r = requests.post(deal_url, data=deal_json)
         print r
     print "Finished posting deals to database"
 
@@ -175,22 +177,6 @@ def product_to_json(prod, vendorId):
     return prod_json
 
 
-def deals_to_json(deal, vendorName, vendorId):
-    deal_json = {}
-    deal_json['dealName'] = deal.name
-    deal_json['vendorName'] = vendorId
-    deal_json['vendorId'] = vendorName
-    deal_json['type'] = deal.category
-    deal_json['price'] = deal.price
-    deal_json['discount'] = deal.discount
-    deal_json['expireDate'] = deal.expiry_date
-    deal_json['couponCode'] = deal.description
-    deal_json['redeemCount'] = 10
-    deal_json['sendCount'] = 10
-    deal_json['itemSell'] = ["555080d16f2b4e2b0097580b", "5550fd3d6f2b4e2b0097580d"]
-    return deal_json
-
-
 def get_vendor_by_id(vendorId):
     params = {'_id': vendorId}
     r = requests.get(vendor_url, params=params)
@@ -225,18 +211,6 @@ def get_single_vendor(email):
     return vid, vendor
 
 
-def get_single_deal(vendorId, dealName):
-    params = {"vendorId": vendorId, "dealName": dealName}
-    r = requests.get(deal_url, params=params)
-    deals = r.json()
-
-    if len(deals) == 0 or deals is None:
-        print "No deals with vendorId found"
-
-    deal = deals[0]
-    deal_id = deal[id_field]
-    return deal_id, deal
-
 
 def get_single_product(vendorId, productName):
     print vendorId, productName
@@ -261,14 +235,6 @@ def post_single_product(vendorId, prod):
     print "Posting single product", r
 
 
-def post_single_deal(vendorId, deal, vendorName):
-    deal_json = deals_to_json(deal, vendorId, vendorName)
-    for k,v in deal_json.items():
-        print k, type(v),v
-    r = requests.post(deal_url, data=deal_json)
-    print "Posting single deal", r
-
-
 def delete_single_product(vendorId, product):
     print vendorId, product.name
     params = {"vendorId": vendorId, "prodName": product.name}
@@ -280,18 +246,6 @@ def delete_single_product(vendorId, product):
         print r
     except:
         print "No such products found in database"
-
-
-def delete_single_deal(vendorId, deal, vendorName):
-    params = {"vendorId": vendorId, "dealName": deal.name}
-    r = requests.get(deal_url, params=params)
-    try:
-        deals = r.json()
-        deal_id = deals[0][id_field]
-        r = requests.delete(deal_url + '/' + deal_id)
-        print "Deleting single deal", r
-    except:
-        print "No such deals found in database"
 
 
 def get_product_from_id(prod_ids):
