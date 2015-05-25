@@ -153,14 +153,15 @@ def deals():
     if request.method == 'POST':
         print(request.form)
         if request.form['editremove'].split("#")[0] == 'Remove':
-            print "INSIDE REMOVE"
+            print "INSIDE REMOVE DEALS"
             f = request.form
             deal_name = request.form['editremove'].split("#")[1]
             product_name = request.form['editremove'].split("#")[2]
             description = request.form['editremove'].split("#")[3]
             price = request.form['editremove'].split("#")[4]
-            vendors_with_email = Vendor.objects(email=session['email'])
-            vendor = vendors_with_email.first()
+           # vendors_with_email = Vendor.objects(email=session['email'])
+           # print "Vendors with email ", session['email'], " = : ", vendors_with_email
+           # vendor = vendors_with_email.first()
 
             print product_name
 
