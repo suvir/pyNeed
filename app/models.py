@@ -16,8 +16,8 @@ class Deal(db.Document):
     expiry_date = db.DateTimeField(required=True)
     coupon_code = db.FloatField()
     product_name = db.StringField(max_length=255, required=True)
-    redeem_count = db.FloatField(min_value=0.0)
-    send_count = db.FloatField(min_value=0.0)
+#    redeem_count = db.FloatField(min_value=0.0)
+#    send_count = db.FloatField(min_value=0.0)
 
 
 class Vendor(db.Document):
