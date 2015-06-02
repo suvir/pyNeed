@@ -7,7 +7,11 @@ def VendorTypes():
     result = []
     with open('vendor_types', 'r') as f:
         for line in f:
-            result.extend(literal_eval(line.strip()))
+            try:
+                l = literal_eval(line.strip())
+                result.extend(l)
+            except ValueError:
+                print "Value error"
     return result
 
 class LoginForm(Form):

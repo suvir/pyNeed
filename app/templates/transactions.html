@@ -1,0 +1,109 @@
+<!-- Author: Nemanja Aksic -->
+<!-- extend from base layout -->
+{% extends "base.html" %}
+{% block content %}
+
+
+
+    <section id="about" class="about">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2>List of completed transactions</h2>
+                    <p class="lead">At any time, the list below contains all transactions regarding deals offered by you,
+                    purchased by your customers.</p>
+                </div>
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /.container -->
+    </section>
+
+<section id="services" class="services bg-primary">
+    <div class="container" id="product_list">
+        <div class="row text-center">
+            <table class="table" id="product_table">
+                <tr>
+                    <td><b>Date</b></td>
+                    <td><b>Payment Type</b></td>
+                    <td><b>Total Price</b></td>
+                    <td><b>Tax</b></td>
+                    <td><b>DealID</b></td>
+                    <td><b>Discount</b></td>
+                </tr>
+                <tr>
+                {% for transactions in transactions %}
+                    <td>{{ transactions.date }}</td>
+                    <td>{{ transactions.payment_type }}</td>
+                    <td>{{ transactions.total }}</td>
+                    <td>{{ transactions.tax }}</td>
+                    <td>{{ transactions.deal_id }}</td>
+                    <td>{{ transactions.discount }}</td>
+                {% endfor %}
+                </tr>
+
+
+            </table>
+
+
+        </div>
+    </div>
+
+
+
+        <!--<div class="container">
+            <div class="row text-center">
+                <div class="row" id="itemRows">
+                    <form method="post">
+                    <div class="col-xs-5 col-md-5">
+                        <div class="form-group">
+                            <input type="text" class="form-control input-sm" name="add_qty" placeholder="Name: "/>
+                        </div>
+                    </div>
+                    <div class="col-xs-5 col-md-5">
+                        <div class="form-group">
+                         <input type="text" class="form-control input-sm" name="add_name" placeholder="Description: "/>
+                        </div>
+                    </div>
+                    <div class="col-xs-2 col-md-2">
+                        <div class="form-group">
+                             <input onclick="addRow(this.form);" type="button" value="Add row" class="btn btn-light"/>
+                        </div>
+                    </div>
+                        <br/>
+
+
+                </div>
+                <input type="submit" class="btn btn-light" name="ok" value="Save Changes">
+                </form>
+            </div>
+        </div> -->
+</section>
+
+<script type="text/javascript">
+
+    function submitEditRemoveForm(){
+        $('#delete_form').submit();
+    }
+
+
+
+    function scrollToElement(ele) {
+    $(window).scrollTop(ele.offset().top).scrollLeft(ele.offset().left);
+    }
+    scrollToElement($('#product_list'));
+var rowNum = 0;
+function addRow(frm) {
+	rowNum++;
+	console.log(rowNum);
+	var row = '<p id="rowNum'+rowNum+'">Name: <input type="text" name="qty'+rowNum+'" value="'+frm.add_qty.value+'"> Description: <input type="text" name="name'+rowNum+'" value="'+frm.add_name.value+'"> Price: <input type="text" name="price'+rowNum+'" value="'+frm.add_price.value+'"> <input type="button" value="Remove" onclick="removeRow('+rowNum+');"></p>';
+	jQuery('#product_form').append(row);
+	frm.add_qty.value = '';
+	frm.add_name.value = '';
+}
+
+function removeRow(rnum) {
+	jQuery('#rowNum'+rnum).remove();
+}
+</script>
+{% endblock %}

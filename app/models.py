@@ -20,6 +20,15 @@ class Deal(db.Document):
 #    send_count = db.FloatField(min_value=0.0)
 
 
+class Transaction(db.Document):
+    payment_type = db.StringField(max_length=255, required=True)
+    date = db.StringField(max_length=255, required=True)
+    tax = db.StringField(max_length=255, required=True)
+    total = db.StringField(max_length=255, required=True)
+    deal_id = db.StringField(max_length=255, required=True)
+    discount = db.FloatField(min_value=0.0, required=True)
+
+
 class Vendor(db.Document):
     name = db.StringField(max_length=255, required=True)
     description = db.StringField(max_length=255)

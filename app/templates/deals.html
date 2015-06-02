@@ -24,27 +24,22 @@
         <div class="row text-vertical-center">
             <h3>Add a new deal</h3><hr class="small">
 
-            <form method="POST" id="product_form">
+            <form method="POST" id="deal_form">
                  <div class="col xs-12 col-sm-12 col-md-8">
 
-                     <div class="col-xs-4 col-sm-4 col-md-4">
+                     <div class="col-xs-12 col-sm-6 col-md-6">
                          <div class="form-group">
                              <input type="text" class="form-control input-sm" name="add_qty" placeholder="Name: "/>
                          </div>
                     </div>
 
-                    <div class="col-xs-4 col-sm-4 col-md-4">
-                       <div class="form-group">
-                           <input type="text" class="form-control input-sm" name="add_prod_name" placeholder="Product Name: "/>
-                       </div>
-                    </div>
-                     <div class="col-xs-4 col-sm-4 col-md-4">
+                     <div class="col-xs-12 col-sm-6 col-md-6">
                        <div class="form-group">
                            <input type="text" class="form-control input-sm" name="add_coupon_code" placeholder="Coupon Code: "/>
                        </div>
                     </div>
                     <br>
-                    <div class="form-group col-xs-3 col-sm-3 col-md-3">
+                    <div class="form-group col-xs-12 col-sm-3 col-md-3">
                        <select name="add_deal_type" class="form-control input-sm">
                            <option value="dummy_deal_type">Select deal type..</option>
                            <option value="dummy_deal_type">Deal</option>
@@ -52,25 +47,25 @@
                        </select>
                     </div>
 
-                    <div class="col-xs-7 col-sm-7 col-md-7">
+                    <div class="col-xs-12 col-sm-7 col-md-7">
                         <div class="form-group">
                             <input type="text" class="form-control input-sm" name="add_name" placeholder="Description: "/>
                          </div>
                     </div>
-                    <div class="col-xs-2 col-sm-2 col-md-2">
+                    <div class="col-xs-12 col-sm-2 col-md-2">
                         <div class="form-group">
                             <input type="text" class="form-control input-sm" name="add_quantity" placeholder="Quantity: "/>
                          </div>
                     </div>
-                    <div class="col-xs-4 col-sm-4 col-md-4">
+                    <div class="col-xs-12 col-sm-4 col-md-4">
                         <input type="text" class="form-control input-sm" name="add_price" placeholder="Price: "/>
                     </div>
-                    <div class="col-xs-4 col-sm-4 col-md-4">
+                    <div class="col-xs-12 col-sm-4 col-md-4">
                        <div class="form-group">
                            <input type="text" class="form-control input-sm" name="add_discount" placeholder="Discount in %: "/>
                        </div>
                     </div>
-                    <div class="col-xs-4 col-sm-4 col-md-4">
+                    <div class="col-xs-12 col-sm-4 col-md-4">
                        <div class="form-group">
                                <input type="text" class="form-control input-sm" name="add_expiry_date" placeholder="Pick an expiry date: " id="add_expiry_date"/>
                        </div>
@@ -81,17 +76,23 @@
                     <ul id="check-list-box" class="list-group checked-list-box">
                         {% for product in products %}
                         <a class="list-group-item">
-                            {{product.name}}
+                           {{product.name}}
+                            <span hidden="true" id="{{ product.name }}" value="">,{{ product.id }}</span>
                           </a>
                         {% endfor %}
                     </ul>
+                    <input type="text" name="add_item_list" id="add_item_list" value="testvalue" hidden="hidden"/>
 
 
                 </div>
                 <div class="form-group">
-                    <input type="submit" class="btn btn-light" name="editremove" value="Add Deal">
+                    <input onclick="submitAddDealForm()" class="btn btn-light" name="editremove" value="Add Deal"/>
              <!--<input onclick="addRow(this.form);" type="button" value="Add row" class="btn btn-light"/>-->
+
+                    <a id="get-checked-data">CHECKED DATA</a>
+                    <p id="display-json"></p>
                 </div>
+
 
 
 
@@ -106,7 +107,7 @@
                 <tr>
                     <td><b>#</b></td>
                     <td><b>Deal</b></td>
-                    <td><b>Product</b></td>
+                    <!--<td><b>Product(s)</b></td>-->
                     <td><b>Description</b></td>
                     <td><b>Price</b></td>
                     <td><b>Status</b></td>
@@ -118,7 +119,7 @@
                     <tr>
                         <td>{{deals.index(deal)+1}}</td>
                         <td><input hidden="true" name="name" value="{{deal.name}}">{{deal.name}}</td>
-                        <td><input hidden="true" name="product_name" value="{{deal.product_name}}">{{deal.product_name}}</td>
+                        <!--<td><input hidden="true" name="product_name" value="{{deal.product_name}}">{{deal.product_name}}</td>-->
                         <td><input hidden="true" name="description" value="{{deal.description}}">{{deal.description}}</td>
                         <td><input hidden="true" name="price" value="{{deal.price}}">{{deal.price}}</td>
                         <td id="{{deal.name}}-{{ deals.index(deal)}}"></td>
@@ -239,15 +240,7 @@ $(function () {
         init();
     });
 
-    $('#get-checked-data').on('click', function(event) {
-        event.preventDefault();
-        var checkedItems = {}, counter = 0;
-        $("#check-list-box li.active").each(function(idx, li) {
-            checkedItems[counter] = $(li).text();
-            counter++;
-        });
-        $('#display-json').html(JSON.stringify(checkedItems, null, '\t'));
-    });
+
 });
 
     $(document).ready(function() {
@@ -290,12 +283,43 @@ $(function () {
         });
 
 
-
+        function submitAddDealForm(){
+            //itemlist();
+            //var element = document.getElementById("add_item_list");
+            //element.value = "valuee";
+            $('#deal_form').submit();
+        }
     });
+
+     function itemlist() {
+        event.preventDefault();
+        var checkedItems = {}, counter = 0;
+        $("#check-list-box .active").each(function(idx, li) {
+            var id = $(li).text().replace(/(\r\n|\n|\r)/gm," ").trim();
+            var idstring = "#"+id;
+            //console.log($("#check-list-box .active span").val());
+            checkedItems[counter] = id;
+            counter++;
+        });
+        var list = "";
+        for (var i=0; i<checkedItems.length; i++){
+            var item_id = checkedItems[i].split(",")[1];
+            if(i!=checkedItems.length-1){
+                list.append(item_id + ",");
+            }
+            else{
+                list.append(item_id);
+            }
+        }
+        $('#add_item_list').val(list);
+    };
 
     function submitEditRemoveForm(){
         $('#delete_form').submit();
     }
+
+
+
 
 
 

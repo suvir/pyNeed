@@ -6,6 +6,7 @@ from utility_funcs import get_password_hash, check_password, parse_product_catal
     get_coordinates
 from ast import literal_eval
 from db_utilities import *
+from transactions_utilities import *
 import bson
 
 
@@ -46,7 +47,7 @@ def index():
                             longitude=repr(coords[1]))
         # new_vendor.save()
 
-        if get_vendor_from_db(form.email.data) is None :
+        if get_vendor_from_db(form.email.data) is None:
             post_vendor_to_db(new_vendor)
             # Add email to cookie
             session['email'] = new_vendor.email
@@ -55,7 +56,6 @@ def index():
             form.email.errors.append("User with email: "+request.form['email']+" already exists in the database")
             flash("Enrollment failed")
             return render_template('index.html', form=form, email='', loginform=loginform, v='')
-
 
     elif request.method == 'POST' and request.form['submit'] == "Login" and loginform.validate_on_submit():
         vid, vendor = get_vendor_from_db(loginform.email.data)
@@ -76,8 +76,8 @@ def index():
             loginform.password.errors.append("Incorrect password")
             flash('Login failed because incorrect password')
 
-    print "Form errors below:"
-    print(form.errors)
+    #print "Form errors below:"
+    #print(form.errors)
     return render_template('index.html', form=form, email='', loginform=loginform, v='')
 
 
@@ -192,6 +192,15 @@ def deals():
             print "Not inside any form..."
 
     return render_template('deals.html', loginform='', email=session['email'], vendor=vendor, deals=vendor.deal_list, products=vendor.product_catalog)
+
+
+@app.route('/transactions')
+def transactions():
+    if 'email' not in session:
+        return redirect(url_for('index'))
+    else:
+        transaction_list = get_transactions_for_vendor_email(session['email'])
+        return render_template('transactions.html', loginform='', email=session['email'], transactions=transaction_list)
 
 
 @app.route('/signup', methods=['GET', 'POST'])

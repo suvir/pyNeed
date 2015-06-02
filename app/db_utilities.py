@@ -27,7 +27,6 @@ def __parse_vendor(vendor, products, deals):
 
     return v
 
-
 def get_vendor_from_db_by_id(vendor_id):
     """
     A function to make GET requests for vendor, product, deals and wrap them into a single vendor object
@@ -64,7 +63,7 @@ def get_vendor_from_db(email):
     vendor_id, vendor = get_single_vendor(email)
 
     if vendor is None or vendor_id is None:
-        return None
+        return None, None
 
     # Get all products with matching vendorId
     param = {"vendorId": vendor_id}
@@ -184,7 +183,7 @@ def get_vendor_by_id(vendorId):
     vendors = r.json()
     if len(vendors) == 0 or vendors is None:
         print "No vendor with email found"
-        return None
+        return None, None
 
     vendor = vendors[0]
     print "GETS VENDOR FROM DB"

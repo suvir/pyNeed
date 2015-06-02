@@ -1,1 +1,2 @@
-('restaurant',"Restaurant"),('cafe', "Cafe"),('retail', "Retail")
+('restaurant',"Restaurant"),('cafe', "Cafe"),('retail', "Retail"),('juice',"Juice Bar"), ('pub', "Pub"), ('bookstore', "Bookstore"), ('foodtruck',"Food Truck"),
+('electronics',"Electronics Store"), ('clothing', "Clothing Store")
