@@ -6,3 +6,4 @@ pymongo==2.8
 flask-script
 wtforms
 werkzeug
+requests
