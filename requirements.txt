@@ -1,9 +1,7 @@
 Flask==0.10.1
 flask-wtf==0.11
-flask-sqlalchemy
-flask-mongoengine
-pymongo==2.8
 flask-script
 wtforms
 werkzeug
 requests
+bson
