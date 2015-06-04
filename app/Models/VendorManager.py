@@ -137,7 +137,7 @@ class VendorManager(object):
         else:
             latitude, longitude = None, None
             print query, "<no results>"
-        return latitude, longitude
+        return longitude, latitude
 
     @staticmethod
     def get_vendor_types():

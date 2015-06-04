@@ -30,13 +30,22 @@
                     <td><b>Price</b></td>
                     <td><b>Actions</b></td>
                 </tr>
-               <form method="POST" id="delete_form">>
+               <form method="POST" id="delete_form">
                 {%for product in products%}
                     <tr>
                         <td>{{products.index(product)+1}}</td>
                         <td><input hidden="true" name="name" value="{{product.name}}">{{product.name}}</td>
                         <td><input hidden="true" name="description" value="{{product.description}}">{{product.description}}</td>
-                        <td><input hidden="true" name="price" value="{{product.price}}">{{product.price}}</td>
+                        <td><input hidden="true" name="price" value="{{product.price}}">
+
+                            <script type="text/javascript">
+                                var num ={{product.price}};
+                                num = parseFloat(num).toFixed(2);
+                                document.write("$"+num);
+                            </script>
+
+
+                        </td>
                         <td>
                             <label for="{{product.name}}_{{product.description}}_{{product.price}}" class="btn editremove">
                                 <i class="fa fa-remove fa-lg"></i> Remove</label>

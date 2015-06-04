@@ -85,6 +85,9 @@ def catalog():
         vid, vendor = VendorManager.get_vendor(email=session['email'])
         if vendor is None:
             print "No such vendor in database"
+        else:
+            prod_count = str(len(vendor.product_catalog))
+            vendor_deal_count = str(len(vendor.deal_list))
 
     if request.method == 'POST':
         print(request.form)
@@ -126,7 +129,7 @@ def catalog():
             print "Not inside any form..."
 
     return render_template('product_catalog.html', loginform='', email=session['email'], vendor=vendor,
-                           products=vendor.product_catalog)
+                           products=vendor.product_catalog, product_count=prod_count, deal_count=vendor_deal_count)
 
 
 @app.route('/deals', methods=['GET', 'POST', 'DELETE'])
@@ -141,6 +144,9 @@ def deals():
         vid, vendor = VendorManager.get_vendor(email=session['email'])
         if vendor is None:
             print "No such vendor in database"
+        else:
+            prod_count = str(len(vendor.product_catalog))
+            vendor_deal_count = str(len(vendor.deal_list))
 
     # Received a form
     if request.method == 'POST':
@@ -185,7 +191,7 @@ def deals():
             print "Not inside any form..."
 
     return render_template('deals.html', loginform='', email=session['email'], vendor=vendor, deals=vendor.deal_list,
-                           products=vendor.product_catalog)
+                           products=vendor.product_catalog, product_count=prod_count, deal_count=vendor_deal_count)
 
 
 @app.route('/transactions')
@@ -193,8 +199,13 @@ def transactions():
     if 'email' not in session:
         return redirect(url_for('index'))
     else:
+        # Find the vendor in database with matching email address
+        vid, vendor = VendorManager.get_vendor(email=session['email'])
+
         transaction_list = VendorManager.get_vendor(email=session['email'])
-        return render_template('transactions.html', loginform='', email=session['email'], transactions=transaction_list)
+        prod_count = str(len(vendor.product_catalog))
+        vendor_deal_count = str(len(vendor.deal_list))
+        return render_template('transactions.html', loginform='', email=session['email'], transactions=transaction_list, product_count=prod_count, deal_count=vendor_deal_count)
 
 
 @app.route('/signup', methods=['GET', 'POST'])

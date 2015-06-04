@@ -247,7 +247,7 @@
         });
     });
 
-    var formErrors = {% if loginform.errors != {} %}true{% else %}false{% endif %};
+    var formErrors = {% if loginform!='' and loginform.errors != {} %}true{% else %}false{% endif %};
 
     $(document).ready(function() {
         if (formErrors) {
