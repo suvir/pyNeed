@@ -24,7 +24,7 @@ class Vendor(object):
         vendor['email'] = self.email
         vendor['type'] = self.category
         vendor['address'] = self.address
-        vendor['coordinates'] = [self.latitude, self.longitude]
+        vendor['coordinates'] = [self.longitude, self.latitude]
         vendor['phoneNumber'] = self.phone
         vendor['state'] = self.state
         vendor['city'] = self.city

@@ -34,13 +34,20 @@ def index():
         coords = VendorManager.get_vendor_coordinate(form.address.data + " " + form.city.data)
         print coords[0]
         print coords[1]
-        new_vendor = VendorManager.create_vendor(name=form.name.data, description=form.description.data,
-                                                 email=form.email.data,
-                                                 category=form.category.data, address=form.address.data,
-                                                 phone=form.phone.data,
-                                                 state=form.state.data, city=form.city.data, pwdhash=pwdhash,
-                                                 latitude=repr(coords[0]),
-                                                 longitude=repr(coords[1]))
+        given_data = {}
+        given_data['name'] = form.name.data
+        given_data['description'] = form.description.data,
+        given_data['email'] = form.email.data
+        given_data['type'] = form.category.data
+        given_data['address'] = form.address.data
+        given_data['phoneNumber'] = form.phone.data
+        given_data['state'] = form.state.data
+        given_data['city'] = form.city.data
+        given_data['password'] = pwdhash
+        given_data['coordinates'] = [repr(coords[0]), repr(coords[1])]
+
+        new_vendor = VendorManager.create_vendor(given_data)
+        VendorManager.post_vendor(new_vendor)
 
         if VendorManager.get_vendor(email=form.email.data) is None:
             VendorManager.post_vendor(new_vendor)

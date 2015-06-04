@@ -20,7 +20,7 @@ class VendorManager(object):
         #print "Called factory1"
         v = Vendor(name=vendor['name'], description=vendor['description'], email=vendor['email'],
                    category=vendor['type'],
-                   address=vendor['address'], latitude=vendor['coordinates'][0], longitude=vendor['coordinates'][1],
+                   address=vendor['address'], latitude=vendor['coordinates'][1], longitude=vendor['coordinates'][0],
                    phone=vendor['phoneNumber'], state=vendor['state'], city=vendor['city'], pwdhash=vendor['password'])
         return v
 
@@ -104,7 +104,7 @@ class VendorManager(object):
         print "Finished posting products to database"
 
         # Post deals to database
-        DealManager.post_deals_many(vendor_model.deal_list)
+        #DealManager.post_deals_many(vendor_model.deal_list)
         return 0
 
     @staticmethod

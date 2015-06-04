@@ -99,8 +99,7 @@
                 <tr>
                     <td><b>#</b></td>
                     <td><b>Deal</b></td>
-                    <!--<td><b>Product(s)</b></td>-->
-                    <td><b>Description</b></td>
+                    <td><b>Product(s)</b></td>
                     <td><b>Price</b></td>
                     <td><b>Status</b></td>
                     <td><b>Actions</b></td>
@@ -111,8 +110,15 @@
                     <tr>
                         <td>{{deals.index(deal)+1}}</td>
                         <td><input hidden="true" name="name" value="{{deal.name}}">{{deal.name}}</td>
-                        <!--<td><input hidden="true" name="product_name" value="{{deal.product_name}}">{{deal.product_name}}</td>-->
-                        <td><input hidden="true" name="description" value="{{deal.description}}">{{deal.description}}</td>
+                        <td><input hidden="true" name="product_name" value="{{deal.item_list}}">
+                            {% for item in deal.item_list %}
+                                {% for product in products %}
+                                    {% if product.id == item %}
+                                        {{ product.name }}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endfor %}
+                        </td>
                         <td><input hidden="true" name="price" value="{{deal.price}}">{{deal.price}}</td>
                         <td id="{{deal.name}}-{{ deals.index(deal)}}"></td>
                         <td>
