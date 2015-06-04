@@ -11,7 +11,7 @@ class Deal(object):
         self.category = category
         self.expiry_date = expiry_date
         self.coupon_code = coupon_code
-        self.item_list = item_list
+        self.item_list = str(item_list).split(',')
         #self.product_name = product_name
 
     def to_json(self, vendor_name, vendor_id):
