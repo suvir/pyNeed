@@ -1,17 +1,20 @@
 __author__ = 'suvir'
 
+import json
+
 
 class Deal(object):
-    def __init__(self, name, price, discount, category, expiry_date, coupon_code, product_name):
+    def __init__(self, name, price, discount, category, expiry_date, coupon_code, item_list):
         self.name = name
         self.price = price
         self.discount = discount
         self.category = category
         self.expiry_date = expiry_date
         self.coupon_code = coupon_code
-        self.product_name = product_name
+        self.item_list = item_list
+        #self.product_name = product_name
 
-    def to_json(self, vendor_name, vendor_id, product_list_json):
+    def to_json(self, vendor_name, vendor_id):
         deal_json = {}
         deal_json['deal_name'] = self.name
         deal_json['vendor_name'] = vendor_name
@@ -21,5 +24,5 @@ class Deal(object):
         deal_json['discount'] = str(self.discount)
         deal_json['expire'] = self.expiry_date
         deal_json['coupon_code'] = self.coupon_code
-        deal_json['item_sell'] = product_list_json
+        deal_json['item_sell'] = json.dumps(self.item_list)
         return deal_json

@@ -39,8 +39,8 @@ class VendorManager(object):
         for deal in deals:
             if 'itemSell' not in deal:
                 raise Exception("Unexpected schema change. Expected field itemSell in deal.")
-            product_name = ProductManager.get_product_name(deal['itemSell'])
-            d = DealManager.create_deal(deal, product_name)
+            #product_name = ProductManager.get_product_name(deal['itemSell'])
+            d = DealManager.create_deal(deal, deal['itemSell'])
             v.deal_list.append(d)
         return v
 
