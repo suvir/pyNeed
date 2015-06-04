@@ -47,8 +47,8 @@ def index():
         given_data['coordinates'] = [repr(coords[0]), repr(coords[1])]
 
         new_vendor = VendorManager.create_vendor(given_data)
-        VendorManager.post_vendor(new_vendor)
-
+        print "CHECKING IF VENDOR W/ EMAIL EXISTS"
+        print VendorManager.get_vendor(email=form.email.data)
         if VendorManager.get_vendor(email=form.email.data) is None:
             VendorManager.post_vendor(new_vendor)
             # Add email to cookie
