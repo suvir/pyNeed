@@ -401,6 +401,7 @@ def notifyAllVendors():
     if bson.ObjectId.is_valid(request.args.get('vendorId')):
         vendor = VendorManager.get_vendor(vendor_id=request.args.get('vendorId'))
         if vendor is not None:
+            VendorManager.email_vendor(vendor.email,request.args.get('message'),request.args.get('transactionId'))
             resp = jsonify({'message': "Vendor with id: " + request.args.get('vendorId') + " successfully notified"})
             resp.status_code = 200
             return resp
