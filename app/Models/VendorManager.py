@@ -16,6 +16,7 @@ except ImportError:
 class VendorManager(object):
     @staticmethod
     def create_vendor(vendor):
+        #print "Called factory1"
         v = Vendor(name=vendor['name'], description=vendor['description'], email=vendor['email'],
                    category=vendor['type'],
                    address=vendor['address'], latitude=vendor['coordinates'][0], longitude=vendor['coordinates'][1],
@@ -23,12 +24,11 @@ class VendorManager(object):
         return v
 
     @staticmethod
-    def create_vendor(name=None, description=None, email=None, category=None, address=None, latitude=None,
-                      longitude=None, phone=None, state=None, city=None, pwdhash=None):
-        return Vendor(name, description, email, category, address, latitude, longitude, phone, state, city, pwdhash)
-
-    @staticmethod
     def parse_vendor(vendor, products, deals):
+        # print "Inside parse vendor"
+        # print vendor
+        # print products
+        # print deals
         v = VendorManager.create_vendor(vendor)
 
         for prod in products:

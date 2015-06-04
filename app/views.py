@@ -50,7 +50,7 @@ def index():
         else:
             form.email.errors.append("User with email: " + request.form['email'] + " already exists in the database")
             flash("Enrollment failed")
-            return render_template('index.html', form=form, loginform=loginform)
+            return render_template('index.html', form=form, email='', loginform=loginform, v='')
 
     elif request.method == 'POST' and request.form['submit'] == "Login" and loginform.validate_on_submit():
         vid, vendor = VendorManager.get_vendor(email=loginform.email.data)
@@ -73,7 +73,7 @@ def index():
 
     # print "Form errors below:"
     # print(form.errors)
-    return render_template('index.html', form=form, loginform=loginform)
+    return render_template('index.html', form=form, email='', loginform=loginform, v='')
 
 
 @app.route('/catalog', methods=['GET', 'POST', 'DELETE'])
@@ -125,7 +125,7 @@ def catalog():
         else:
             print "Not inside any form..."
 
-    return render_template('product_catalog.html', email=session['email'], vendor=vendor,
+    return render_template('product_catalog.html', loginform='', email=session['email'], vendor=vendor,
                            products=vendor.product_catalog)
 
 
@@ -184,7 +184,7 @@ def deals():
         else:
             print "Not inside any form..."
 
-    return render_template('deals.html', email=session['email'], vendor=vendor, deals=vendor.deal_list,
+    return render_template('deals.html', loginform='', email=session['email'], vendor=vendor, deals=vendor.deal_list,
                            products=vendor.product_catalog)
 
 
@@ -194,7 +194,7 @@ def transactions():
         return redirect(url_for('index'))
     else:
         transaction_list = VendorManager.get_vendor(email=session['email'])
-        return render_template('transactions.html', email=session['email'], transactions=transaction_list)
+        return render_template('transactions.html', loginform='', email=session['email'], transactions=transaction_list)
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -221,7 +221,7 @@ def signup():
         session['email'] = new_vendor.email
         return redirect(url_for('profile'))
 
-    return render_template('signup.html', form=form)
+    return render_template('signup.html', form=form, email='')
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -300,7 +300,7 @@ def profile():
     else:
         return render_template('profile.html', email=session['email'], v=vendor, products=vendor.product_catalog,
                                deals=vendor.deal_list, product_count=prod_count, deal_count=vendor_deal_count,
-                               form=form)
+                               form=form, loginform='')
 
 
 # Service that gets vendor type for a specific vendorid
