@@ -8,7 +8,7 @@ class TransactionDao(object):
     @staticmethod
     def get_all_transactions_for_vendor(vendor_id):
         params = {}
-        r = requests.get(GET_TRANSACTIONS_URL, params=params)
+        r = requests.get(GET_TRANSACTIONS_URL+str(vendor_id)+"/transactions", params=params)
         try:
             transactions = r.json()
         except ValueError:
@@ -17,6 +17,6 @@ class TransactionDao(object):
         if len(transactions) != 0:
             for t in transactions:
                 if t['vendorId'] == vendor_id:
-                    transaction_list.append(Transaction(payment_type=t['payment_type'], tax=t['tax'], total=t['total'],
-                                                        deal_id=t['deal_id'], discount=t['discount']))
+                    transaction_list.append(Transaction(order_id=t['orderId'], is_deal=t['isDeal'], quantity=t['quantity'], unit_price=t['unitPrice'],
+                                                        deal_id=t['dealId'], discount=t['dealDiscount'], item_name=t['items']))
         return transaction_list
