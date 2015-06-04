@@ -375,9 +375,9 @@ function CompareDate(date){
 
 
 {% for deal in deals %}
-    document.getElementById("{{deal.name}}-{{ deals.index(deal)}}").innerText = CompareDate("{{ deal.expiry_date }}") ;
+    //document.getElementById("{{deal.name}}-{{ deals.index(deal)}}").innerText = CompareDate("{{ deal.expiry_date }}");
 
-    //$("#{{deal.name}}-{{ deals.index(deal)}}").text("ACTIVE");
+    $("#{{deal.name}}-{{ deals.index(deal)}}").text(CompareDate("{{ deal.expiry_date }}"));
 {% endfor %}
 
 </script>
