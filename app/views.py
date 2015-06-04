@@ -309,7 +309,7 @@ def getvendortype(vendorid):
     if bson.ObjectId.is_valid(vendorid):
         vendors = VendorManager.get_vendor(vendor_id=vendorid)
         if vendors is not None:
-            resp = jsonify({'vendor_type': vendors[1].category})
+            resp = jsonify({'vendor_type': vendors.category})
             resp.status_code = 200
             return resp
         else:
@@ -354,11 +354,11 @@ def getallvendortypes():
 @app.route('/api/vendor/catalog/<vendorid>', methods=['GET'])
 def getvendorcatalog(vendorid):
     if bson.ObjectId.is_valid(vendorid):
-        vendors = VendorManager.get_vendor(vendor_id=vendorid)
-        if vendors is not None:
+        vendor = VendorManager.get_vendor(vendor_id=vendorid)
+        if vendor is not None:
             print "found matching vendors"
             products = []
-            for product in vendors[1].product_catalog:
+            for product in vendor.product_catalog:
                 p = {}
                 p['id'] = str(product.id)
                 p['name'] = product.name

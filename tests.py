@@ -60,7 +60,7 @@ class MyTest(TestCase):
         response = self.client.get("/deals")
         self.assertRedirects(response,"/login")
 
-    def test_catalog_with_email_in_session(self):
+    def test_deals_with_email_in_session(self):
         with self.client as c:
             with c.session_transaction() as sess:
                 sess['logged'] = True
@@ -107,7 +107,7 @@ class MyTest(TestCase):
         self.assertTrue(is_json(response.data))
 
     def test_api_vendor_catalog_with_invalid_id(self):
-        response = self.client.get("/api/vendor/catalog/555579fb7d81a62b0005ded2")
+        response = self.client.get("/api/vendor/catalog/555679fb7d81a62b0005ded2")
         self.assert404(response)
         self.assertTrue(is_json(response.data))
 
