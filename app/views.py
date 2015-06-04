@@ -80,7 +80,7 @@ def index():
 def catalog():
     form = ProductAddForm(request.form)
     if 'email' not in session:
-        return redirect(url_for('login'))
+        return redirect(url_for('index'))
     else:
         vid, vendor = VendorManager.get_vendor(email=session['email'])
         if vendor is None:
@@ -138,7 +138,7 @@ def deals():
 
     # Authentication Guard 1
     if 'email' not in session:
-        return redirect(url_for('login'))
+        return redirect(url_for('index'))
     else:
         # Authentication Guard 2
         vid, vendor = VendorManager.get_vendor(email=session['email'])
