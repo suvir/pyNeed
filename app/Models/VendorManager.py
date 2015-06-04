@@ -5,6 +5,7 @@ from VendorDao import VendorDao
 from werkzeug import generate_password_hash, check_password_hash
 from config import GOOGLE_GEOCODE_URL
 from app.constants import VENDOR_TYPES
+import smtplib
 import urllib
 
 try:
@@ -145,3 +146,17 @@ class VendorManager(object):
             return VENDOR_TYPES
         else:
             raise Exception("Vendor Types global list not found!")
+
+    @staticmethod
+    def email_vendor(vendor_email, message,transation_id):
+        fromaddr = 'ineedvendor@gmail.com'
+        toaddrs  = vendor_email
+        username = 'ineedvendor'
+        password = 'ineed123'
+        msg= 'Subject: %s\n\n%s' % ("Transaction with id: "+transation_id+" completed", message)
+        server = smtplib.SMTP('smtp.gmail.com:587')
+        server.starttls()
+        server.login(username,password)
+        server.sendmail(fromaddr, toaddrs, msg)
+        server.quit()
+        return None
