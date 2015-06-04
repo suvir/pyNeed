@@ -4,7 +4,8 @@ import json
 
 
 class Deal(object):
-    def __init__(self, name, price, discount, category, expiry_date, coupon_code, item_list):
+    def __init__(self, name, price, discount, category, expiry_date, coupon_code, item_list,  id=""):
+        self.id = id
         self.name = name
         self.price = price
         self.discount = discount

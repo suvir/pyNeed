@@ -2,6 +2,7 @@ import json
 from Deal import Deal
 from DealDao import DealDao
 from ProductManager import ProductManager
+from config import ID_FIELD
 
 
 class DealManager(object):
@@ -9,7 +10,7 @@ class DealManager(object):
     def create_deal(deal, item_list ):
         d = Deal(name=deal['dealName'], item_list=item_list,
                  coupon_code=deal['couponCode'], price=deal['price'], discount=deal['discount'], category=deal['type'],
-                 expiry_date=deal['expireDate'])
+                 expiry_date=deal['expireDate'], id=deal[ID_FIELD])
         return d
 
     @staticmethod
@@ -21,6 +22,7 @@ class DealManager(object):
     def post_deal(deal, vendor_name, vendor_id):
         deal_json = DealManager.transform_to_json(deal, vendor_name, vendor_id)
         r = DealDao.post_deal(deal_json)
+        deal.id = (r.json())["id"]
         print r
 
     @staticmethod

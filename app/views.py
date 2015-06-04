@@ -162,18 +162,17 @@ def deals():
         if request.form['editremove'].split("#")[0] == 'Remove':
             print "INSIDE REMOVE DEALS"
             f = request.form
+            deal_id = request.form['deal_id']
+
             deal_name = request.form['editremove'].split("#")[1]
             product_name = request.form['editremove'].split("#")[2]
             description = request.form['editremove'].split("#")[3]
             price = request.form['editremove'].split("#")[4]
-            # vendors_with_email = Vendor.objects(email=session['email'])
-            # print "Vendors with email ", session['email'], " = : ", vendors_with_email
-            # vendor = vendors_with_email.first()
 
             print product_name
 
             for deal in vendor.deal_list:
-                if deal.name == deal_name and product_name == deal.product_name:
+                if deal.id == deal_id:
                     print "INSIDE IF FOR DEAL"
                     vendor.deal_list.remove(deal)
                     DealManager.delete_deal(vid, deal, vendor.name)
