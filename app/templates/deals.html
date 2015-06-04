@@ -111,11 +111,14 @@
                         <td>{{deals.index(deal)+1}}</td>
                         <td><input hidden="true" name="name" value="{{deal.name}}">{{deal.name}}</td>
                         <td><input hidden="true" name="product_name" value="{{deal.item_list}}">
+
                             {% for item in deal.item_list %}
+                                <!--{{ item}}-->
                                 {% for product in products %}
-                                    {% if product.id == item %}
-                                        {{ product.name }}
+                                    {% if product.id == item.split(",")|replace("[","")|replace("]","")|replace("u'","")|replace("'","")|replace('"',"")|replace(" ","")%}
+                                        <p>{{ product.name }}</p>
                                     {% endif %}
+
                                 {% endfor %}
                             {% endfor %}
                         </td>
@@ -124,6 +127,7 @@
                         <td>
                             <label for="{{deal.name}}_{{deal.product_name}}_{{deal.description}}_{{deal.price}}" class="btn editremove">
                                 <i class="fa fa-remove fa-lg"></i> Remove</label>
+                            <input type="hidden" name="coupon_code" value="{{ deal.coupon_code }}">
                             <input id="{{deal.name}}_{{deal.product_name}}_{{deal.description}}_{{deal.price}}" type="submit" name="editremove" value="Remove#{{deal.name}}#{{deal.product_name}}#{{deal.description}}#{{deal.price}}" class="hidden"/>
                         </td>
 

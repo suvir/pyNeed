@@ -155,6 +155,7 @@ def deals():
             prod_count = str(len(vendor.product_catalog))
             vendor_deal_count = str(len(vendor.deal_list))
 
+
     # Received a form
     if request.method == 'POST':
         print(request.form)
