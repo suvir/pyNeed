@@ -14,7 +14,7 @@ PRODUCT_URL = 'https://ineed-db.mybluemix.net/api/items'
 DB_TRANSACTIONS_URL = "https://ineed-db.mybluemix.net/api/orders"
 
 # URLs to access Orders and Transactions team API
-GET_TRANSACTIONS_URL = "http://orders2.mybluemix.net/getTransactionHistory.php"
+GET_TRANSACTIONS_URL = "http://orders.mybluemix.net/api/v1/vendors/"
 
 # URLs to access Deals team API
 CREATE_DEAL_URL = 'http://ineed-dealqq.mybluemix.net/createDeal'

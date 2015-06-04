@@ -4,7 +4,7 @@ from ast import literal_eval
 import bson
 
 from Forms import SignupForm, LoginForm, ProductAddForm, DealForm, EditProfileForm
-from Models import VendorManager, ProductManager, DealManager
+from Models import VendorManager, ProductManager, DealManager, TransactionManager
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -202,7 +202,7 @@ def transactions():
         # Find the vendor in database with matching email address
         vid, vendor = VendorManager.get_vendor(email=session['email'])
 
-        transaction_list = VendorManager.get_vendor(email=session['email'])
+        transaction_list = TransactionManager.get_all_transactions_for_vendor(session['email'])
         prod_count = str(len(vendor.product_catalog))
         vendor_deal_count = str(len(vendor.deal_list))
         return render_template('transactions.html', loginform='', email=session['email'], transactions=transaction_list, product_count=prod_count, deal_count=vendor_deal_count)

@@ -24,23 +24,36 @@
         <div class="row text-center">
             <table class="table" id="product_table">
                 <tr>
-                    <td><b>Date</b></td>
-                    <td><b>Payment Type</b></td>
+                    <td><b>OrderID</b></td>
+                    <td><b>Items</b></td>
                     <td><b>Total Price</b></td>
-                    <td><b>Tax</b></td>
+                    <td><b>DealTransaction</b></td>
                     <td><b>DealID</b></td>
                     <td><b>Discount</b></td>
                 </tr>
+
+                {% for transaction in transactions %}
                 <tr>
-                {% for transactions in transactions %}
-                    <td>{{ transactions.date }}</td>
-                    <td>{{ transactions.payment_type }}</td>
-                    <td>{{ transactions.total }}</td>
-                    <td>{{ transactions.tax }}</td>
-                    <td>{{ transactions.deal_id }}</td>
-                    <td>{{ transactions.discount }}</td>
-                {% endfor %}
+                    <td>{{ transaction.order_id}}</td>
+
+                    <td>
+                        {% for item in transaction.item_name %}
+                            {{ item['name'] }} - <i class="transaction-description">{{ item['description'] }}</i>
+                        {% endfor %}
+                    </td>
+                    <td>{{ transaction.total }}</td>
+                    {% if transaction.is_deal == "true" %}
+                        <td>{{ transaction.is_deal }}</td>
+                        <td>{{ transaction.deal_id }}</td>
+                        <td>{{ transaction.discount }}</td>
+                    {% else %}
+                        <td>{{ transaction.is_deal }}</td>
+                        <td> - </td>
+                        <td> - </td>
+                    {% endif %}
                 </tr>
+                {% endfor %}
+
 
 
             </table>
