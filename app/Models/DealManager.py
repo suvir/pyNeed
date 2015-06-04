@@ -7,7 +7,7 @@ from config import ID_FIELD
 
 class DealManager(object):
     @staticmethod
-    def create_deal(deal, item_list ):
+    def create_deal(deal, item_list):
         d = Deal(name=deal['dealName'], item_list=item_list,
                  coupon_code=deal['couponCode'], price=deal['price'], discount=deal['discount'], category=deal['type'],
                  expiry_date=deal['expireDate'], id=deal[ID_FIELD])

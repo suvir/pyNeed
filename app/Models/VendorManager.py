@@ -51,7 +51,10 @@ class VendorManager(object):
             return vendor
         elif email is not None:
             vid, vendor = VendorManager.get_vendor_by_email(email)
-            return vid, vendor
+            if vid is None or vendor is None:
+                return None
+            else:
+                return vid, vendor
         else:
             raise Exception("Called vendor with null id and null email.")
 
@@ -104,7 +107,7 @@ class VendorManager(object):
         print "Finished posting products to database"
 
         # Post deals to database
-        #DealManager.post_deals_many(vendor_model.deal_list)
+        DealManager.post_deals_many(vendor_model.deal_list, vid, vendor_model.name)
         return 0
 
     @staticmethod
