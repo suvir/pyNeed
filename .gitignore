@@ -1,6 +1,5 @@
 *.pyc
 .idea/
-config.py
 flask/
 .DS_STORE
 .coverage
