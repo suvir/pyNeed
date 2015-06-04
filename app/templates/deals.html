@@ -127,7 +127,7 @@
                         <td>
                             <label for="{{deal.name}}_{{deal.product_name}}_{{deal.description}}_{{deal.price}}" class="btn editremove">
                                 <i class="fa fa-remove fa-lg"></i> Remove</label>
-                            <input type="hidden" name="coupon_code" value="{{ deal.coupon_code }}">
+                            <input type="hidden" name="deal_id" value="{{ deal.id }}">
                             <input id="{{deal.name}}_{{deal.product_name}}_{{deal.description}}_{{deal.price}}" type="submit" name="editremove" value="Remove#{{deal.name}}#{{deal.product_name}}#{{deal.description}}#{{deal.price}}" class="hidden"/>
                         </td>
 
