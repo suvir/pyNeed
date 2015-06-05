@@ -2,11 +2,12 @@ __author__ = 'Petter'
 import unittest
 import json
 from app import app
+from app.Models import Deal,DealManager,DealDao,Product,ProductDao,ProductManager,Transaction,TransactionDao,TransactionManager,VendorManager,Vendor,VendorDao
 from flask_testing import TestCase
 from app.forms import SignupForm
-from coverage import coverage
-cov = coverage(branch=True, omit=['flask/*', 'tests.py'])
-cov.start()
+#from coverage import coverage
+#cov = coverage(branch=True, omit=['flask/*', 'view_tests.py'])
+#cov.start()
 
 class MyTest(TestCase):
 
@@ -171,8 +172,6 @@ class MyTest(TestCase):
         self.assertTrue(is_json(response.data))
 
 
-
-
 def is_json(myjson):
   try:
     json_object = json.loads(myjson)
@@ -183,13 +182,13 @@ def is_json(myjson):
 
 
 if __name__ == '__main__':
-    try:
-        unittest.main()
-    except:
-        pass
-    cov.stop()
-    cov.save()
-    print "\n\nCoverage Report:\n"
-    cov.report()
-    cov.html_report(directory='tmp/coverage')
-    cov.erase()
+    #try:
+    unittest.main()
+    #except:
+        #pass
+    #cov.stop()
+    #cov.save()
+    #print "\n\nCoverage Report:\n"
+    #cov.report()
+    #cov.html_report(directory='tmp/coverage')
+    #cov.erase()
