@@ -156,7 +156,7 @@ class VendorManager(object):
         toaddrs  = vendor_email
         username = 'ineedvendor'
         password = 'ineed123'
-        msg= 'Subject: %s\n\n%s' % ("Transaction with id: "+transation_id+" completed", message)
+        msg= 'Subject: %s\n\n%s' % ("Transaction with id: "+transation_id+" completed", urllib.unquote(message))
         server = smtplib.SMTP('smtp.gmail.com:587')
         server.starttls()
         server.login(username,password)
